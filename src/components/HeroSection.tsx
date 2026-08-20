@@ -41,21 +41,23 @@ const TitleSparkles = () => (
 const roles = ["Software Engineer", "AI & ML Practitioner", "Cloud & Backend Architect", "Generative AI Specialist"];
 
 const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => void, position: [number, number, number] }) => (
-  <Html position={position} center distanceFactor={10}>
+  <Html position={position} center distanceFactor={8} zIndexRange={[100, 0]}>
     <button
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className="group relative flex flex-col items-center justify-center p-3 cursor-pointer"
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      className="group relative flex flex-col items-center justify-center p-3 cursor-pointer pointer-events-auto select-none"
     >
-      {/* Subtle Outer Glow */}
-      <div className="absolute inset-0 w-10 h-10 rounded-full bg-primary/10 animate-pulse blur-md group-hover:bg-primary/20 transition-colors duration-300" />
-      <div className="absolute inset-0 w-6 h-6 m-auto rounded-full bg-primary/20 animate-ping opacity-30" />
-
-      {/* Light Gradient Button */}
-      <div className="relative w-3.5 h-3.5 rounded-full bg-gradient-to-br from-white via-primary/40 to-primary/20 shadow-[0_0_12px_rgba(0,243,255,0.6)] border border-white/30 transition-transform duration-300 group-hover:scale-125" />
+      {/* Outer Glow & Radar Ping */}
+      <div className="absolute w-6 h-6 rounded-full bg-primary/30 animate-ping pointer-events-none" />
+      <div className="relative w-3.5 h-3.5 rounded-full bg-primary border-2 border-white shadow-[0_0_15px_#00f3ff] transition-transform duration-300 group-hover:scale-125 pointer-events-none" />
 
       {/* Label HUD */}
-      <div className="mt-2 px-2.5 py-0.5 bg-black/80 backdrop-blur-md rounded-full border border-white/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-md">
-        <span className="text-[10px] md:text-[9px] font-bold tracking-[0.2em] uppercase text-white/90 whitespace-nowrap">
+      <div className="mt-2 px-2.5 py-1 bg-black/90 backdrop-blur-md rounded-md border border-primary/50 shadow-[0_0_10px_rgba(0,243,255,0.4)] pointer-events-none transition-all duration-300 group-hover:border-primary">
+        <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-white group-hover:text-primary transition-colors whitespace-nowrap">
           {label}
         </span>
       </div>
@@ -163,24 +165,27 @@ function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], cur
 
     // Dynamic mouse banking / cursor follow
     const isFront = currentView === 'front';
-    const targetRotationX = isFront ? (-state.pointer.y * 0.35 + baseRotationRef.current.x) : baseRotationRef.current.x;
-    const targetRotationY = isFront ? (state.pointer.x * 0.45 + baseRotationRef.current.y) : baseRotationRef.current.y;
-    const targetRotationZ = isFront ? (-state.pointer.x * 0.2 + baseRotationRef.current.z) : baseRotationRef.current.z;
+    const targetRotationX = isFront ? (-state.pointer.y * 0.45 + baseRotationRef.current.x) : baseRotationRef.current.x;
+    const targetRotationY = isFront ? (state.pointer.x * 0.55 + baseRotationRef.current.y) : baseRotationRef.current.y;
+    const targetRotationZ = isFront ? (-state.pointer.x * 0.25 + baseRotationRef.current.z) : baseRotationRef.current.z;
 
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.08);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.1);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.1);
+    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.1);
 
     const targetPosX = state.pointer.x * 0.5;
     const targetPosY = state.pointer.y * 0.35;
 
     groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
     groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
-    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.002;
+    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.003;
   });
 
+  // Keep Starfighter nicely scaled and visible
+  const effectiveScale = Math.max(0.65, scrollScale);
+
   return (
-    <group ref={groupRef} scale={Math.max(0.001, scrollScale)}>
+    <group ref={groupRef} scale={effectiveScale}>
       <group scale={scale}>
         <Center>
           <primitive object={scene} rotation={[0, 0, 0]} {...props} />
@@ -194,34 +199,32 @@ function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], cur
         {/* Wingtip Laser Cannons */}
         <LaserCannons pointer={pointerRef.current} />
 
-        {/* Dynamic View Hotspots - Always accessible when model is visible */}
-        {scrollScale > 0.2 && (
-          <group>
-            {currentView === 'front' && (
-              <>
-                <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-              </>
-            )}
+        {/* Dynamic View Hotspots - Always active and responsive */}
+        <group>
+          {currentView === 'front' && (
+            <>
+              <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+              <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+              <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+            </>
+          )}
 
-            {currentView === 'back' && (
-              <>
-                <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-                <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
-              </>
-            )}
+          {currentView === 'back' && (
+            <>
+              <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+              <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+              <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+              <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
+            </>
+          )}
 
-            {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
-              <>
-                <Hotspot label="Front" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
-                <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
-              </>
-            )}
-          </group>
-        )}
+          {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
+            <>
+              <Hotspot label="Cockpit" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
+              <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
+            </>
+          )}
+        </group>
       </group>
     </group>
   );
@@ -429,11 +432,10 @@ const HeroSection = () => {
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
             <HeroStarStreaks progress={modelScaleProgress} />
           </group>
-          <PresentationControls global cursor={false} speed={2.5} config={{ mass: 1, tension: 800 }} snap={{ mass: 1.5, tension: 1000 }} rotation={[0, 0, 0]} polar={[-Math.PI / 2.5, Math.PI / 2.5]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
-            <group position={[0, isMobile ? 1.8 : 0, 0]}>
-              <StarfighterModel scrollScale={modelScaleProgress} targetBaseRotation={viewRotations[activeView]} currentView={activeView} onViewChange={setActiveView} />
-            </group>
-          </PresentationControls>
+
+          <group position={[0, isMobile ? 1.8 : 0, 0]}>
+            <StarfighterModel scrollScale={modelScaleProgress} targetBaseRotation={viewRotations[activeView]} currentView={activeView} onViewChange={setActiveView} />
+          </group>
         </Canvas>
       </div>
 

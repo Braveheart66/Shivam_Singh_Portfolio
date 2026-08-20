@@ -12,14 +12,46 @@ const ContactSection = () => {
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const parallaxY = useTransform(scrollYProgress, [0, 1], ["50px", "-30px"]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/shivamsinghraghuvanshi1234@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          _subject: `New Portfolio Inquiry from ${name}`,
+          _template: "table",
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Message sent successfully! I'll get back to you soon.");
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        // Fallback
+        window.open(`mailto:shivamsinghraghuvanshi1234@gmail.com?subject=Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}`);
+        toast.success("Opening your email client to send message...");
+      }
+    } catch {
+      window.open(`mailto:shivamsinghraghuvanshi1234@gmail.com?subject=Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}`);
+      toast.success("Opening your email client to send message...");
+    } finally {
       setSending(false);
-      toast.success("Message sent! I'll get back to you soon.");
-      (e.target as HTMLFormElement).reset();
-    }, 1500);
+    }
   };
 
   return (
@@ -65,6 +97,8 @@ const ContactSection = () => {
               <input
                 required
                 type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                 placeholder="Your name"
               />
@@ -78,6 +112,8 @@ const ContactSection = () => {
               <input
                 required
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                 placeholder="your@email.com"
               />
@@ -92,6 +128,8 @@ const ContactSection = () => {
             <textarea
               required
               rows={5}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all resize-none"
               placeholder="Tell me about your project..."
             />
@@ -104,7 +142,7 @@ const ContactSection = () => {
             className="w-full md:w-auto px-8 py-3 rounded-lg font-medium text-primary-foreground bg-gradient-to-r from-primary to-accent hover:shadow-[0_0_30px_hsl(199,89%,48%,0.3)] transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {sending ? (
-              <span className="animate-pulse">Sending...</span>
+              <span className="animate-pulse">Sending Message...</span>
             ) : (
               <>
                 <Send size={16} /> Send Message
