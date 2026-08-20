@@ -130,6 +130,13 @@
   }
 }
 
+/* ─── Pointer Events Fix for Canvas ─────────────────────────────────── */
+canvas.canvas-no-events {
+  pointer-events: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

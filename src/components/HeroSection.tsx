@@ -469,11 +469,10 @@ const HeroSection = () => {
                 e.stopPropagation();
                 setActiveView(v.id);
               }}
-              className={`px-2.5 py-1 md:px-3.5 md:py-1.5 text-xs font-mono uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
-                activeView === v.id
-                  ? 'bg-primary text-black font-bold shadow-[0_0_15px_#00f3ff]'
-                  : 'text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/30'
-              }`}
+              className={`px-2.5 py-1 md:px-3.5 md:py-1.5 text-xs font-mono uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${activeView === v.id
+                ? 'bg-primary text-black font-bold shadow-[0_0_15px_#00f3ff]'
+                : 'text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/30'
+                }`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${activeView === v.id ? 'bg-black animate-ping' : 'bg-primary/50'}`} />
               {v.label}
@@ -482,16 +481,21 @@ const HeroSection = () => {
         </div>
       )}
 
-      {/* 3D Cosmos and Spaceship Canvas - Hidden at scroll=0, swoops in as scroll progresses */}
+      {/* 3D Cosmos and Spaceship Canvas */}
       <div
         className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-500"
         style={{
           opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
           display: heroScrolledPast ? 'none' : 'flex',
-          pointerEvents: (modelScaleProgress > 0.02 && !heroScrolledPast) ? 'auto' : 'none',
+          pointerEvents: 'auto', // ✅ Container always interactive
         }}
       >
-        <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full">
+        <Canvas
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          camera={{ fov: 45, position: [0, 0, 15] }}
+          className="w-full h-full canvas-no-events" // ✅ Only THIS Canvas
+        >
           <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
           <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
           <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
