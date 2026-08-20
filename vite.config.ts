@@ -18,4 +18,17 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three"],
+          "react-three": ["@react-three/fiber", "@react-three/drei"],
+          vendor: ["react", "react-dom", "framer-motion", "gsap", "@gsap/react"],
+          icons: ["lucide-react"],
+        },
+      },
+    },
+  },
 }));
