@@ -48,12 +48,13 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
       transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      whileHover={{ y: -4, scale: 1.02 }}
       style={{
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_25px_rgba(0,243,255,0.15)]"
+      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-[border-color,box-shadow,background-color] duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_25px_rgba(0,243,255,0.15)] cursor-pointer"
     >
       {/* Top glowing accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />

@@ -41,7 +41,7 @@ const TitleSparkles = () => (
 const roles = ["Software Engineer", "AI & ML Practitioner", "Cloud & Backend Architect", "Generative AI Specialist"];
 
 const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => void, position: [number, number, number] }) => (
-  <Html position={position} center distanceFactor={8} zIndexRange={[100, 0]}>
+  <Html position={position} center distanceFactor={8} zIndexRange={[200, 0]}>
     <button
       type="button"
       onClick={(e) => {
@@ -49,7 +49,8 @@ const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => v
         e.stopPropagation();
         onClick();
       }}
-      className="group relative flex flex-col items-center justify-center p-3 cursor-pointer pointer-events-auto select-none"
+      className="group relative flex flex-col items-center justify-center p-3 cursor-pointer select-none"
+      style={{ pointerEvents: 'auto' }}
     >
       {/* Outer Glow & Radar Ping */}
       <div className="absolute w-6 h-6 rounded-full bg-primary/30 animate-ping pointer-events-none" />
@@ -451,13 +452,14 @@ const HeroSection = () => {
 
       {/* 3D Cosmos and Spaceship Canvas - Hidden at scroll=0, swoops in as scroll progresses */}
       <div
-        className="middle-3d-model absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden transition-opacity duration-500"
+        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-500"
         style={{
           opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
-          visibility: heroScrolledPast ? 'hidden' : 'visible',
+          display: heroScrolledPast ? 'none' : 'flex',
+          pointerEvents: (modelScaleProgress > 0.02 && !heroScrolledPast) ? 'auto' : 'none',
         }}
       >
-        <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full" style={{ pointerEvents: 'none' }}>
+        <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full">
           <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
           <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
           <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
