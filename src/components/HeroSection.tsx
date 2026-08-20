@@ -63,11 +63,42 @@ const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => v
   </Html>
 );
 
-function LaserCannons({ pointer, isFixed }: { pointer: { x: number; y: number }; isFixed: boolean }) {
+function LaserCannons({ pointer }: { pointer: { x: number; y: number } }) {
   const lasersRef = useRef<Array<{ mesh: THREE.Mesh; dir: THREE.Vector3; age: number }>>([]);
   const groupRef = useRef<THREE.Group>(null);
   const lastFired = useRef<number>(0);
   const firedFlag = useRef<boolean>(false);
+
+  const spawnLasers = (px: number, py: number) => {
+    [-0.45, 0.45].forEach((offsetX) => {
+      const geom = new THREE.CylinderGeometry(0.02, 0.02, 0.85, 8);
+      const mat = new THREE.MeshBasicMaterial({
+        color: "#ff2233",
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      mesh.position.set(offsetX, 0.05, 0.2);
+      const dir = new THREE.Vector3(px * 0.4, py * 0.4, 1.4).normalize();
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      if (groupRef.current) {
+        groupRef.current.add(mesh);
+        lasersRef.current.push({ mesh, dir, age: 0 });
+      }
+    });
+  };
+
+  // Click / tap to fire lasers
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'BUTTON' || target.tagName === 'A' || target.closest('button') || target.closest('a'))) return;
+      spawnLasers(pointer.x, pointer.y);
+    };
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, [pointer]);
 
   useFrame((state, delta) => {
     const px = pointer.x;
@@ -75,29 +106,12 @@ function LaserCannons({ pointer, isFixed }: { pointer: { x: number; y: number };
     const mag = Math.sqrt(px * px + py * py);
     const now = performance.now();
 
-    // Fast cursor movement fires twin plasma cannons
-    if (isFixed && mag > 0.65 && !firedFlag.current && now - lastFired.current > 180) {
+    // Fast cursor swing fires twin plasma cannons
+    if (mag > 0.55 && !firedFlag.current && now - lastFired.current > 200) {
       firedFlag.current = true;
       lastFired.current = now;
-
-      [-0.45, 0.45].forEach((offsetX) => {
-        const geom = new THREE.CylinderGeometry(0.02, 0.02, 0.85, 8);
-        const mat = new THREE.MeshBasicMaterial({
-          color: "#ff2233",
-          transparent: true,
-          opacity: 0.9,
-          blending: THREE.AdditiveBlending,
-        });
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.set(offsetX, 0.05, 0.2);
-        const dir = new THREE.Vector3(px * 0.4, py * 0.4, 1.4).normalize();
-        mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-        if (groupRef.current) {
-          groupRef.current.add(mesh);
-          lasersRef.current.push({ mesh, dir, age: 0 });
-        }
-      });
-    } else if (mag < 0.4) {
+      spawnLasers(px, py);
+    } else if (mag < 0.35) {
       firedFlag.current = false;
     }
 
@@ -120,7 +134,7 @@ function LaserCannons({ pointer, isFixed }: { pointer: { x: number; y: number };
   return <group ref={groupRef} />;
 }
 
-function StarfighterModel({ isFixed, scrollScale = 1, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, ...props }: { isFixed: boolean, scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void } & any) {
+function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, ...props }: { scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void } & any) {
   const { scene } = useGLTF("/star_wars_ship.glb");
   const [scale, setScale] = useState<[number, number, number]>([4, 4, 4]);
   const groupRef = useRef<THREE.Group>(null);
@@ -142,31 +156,27 @@ function StarfighterModel({ isFixed, scrollScale = 1, targetBaseRotation = [0, 0
     pointerRef.current.x = state.pointer.x;
     pointerRef.current.y = state.pointer.y;
 
-    // Smooth Euler lerp
+    // Smooth Euler lerp to target view angle
     baseRotationRef.current.x = THREE.MathUtils.lerp(baseRotationRef.current.x, targetBaseRotation[0], 0.08);
     baseRotationRef.current.y = THREE.MathUtils.lerp(baseRotationRef.current.y, targetBaseRotation[1], 0.08);
     baseRotationRef.current.z = THREE.MathUtils.lerp(baseRotationRef.current.z, targetBaseRotation[2], 0.08);
 
-    if (isFixed) {
-      const isFront = currentView === 'front';
-      const targetRotationX = isFront ? (-state.pointer.y * 0.3 + baseRotationRef.current.x) : baseRotationRef.current.x;
-      const targetRotationY = isFront ? (state.pointer.x * 0.35 + baseRotationRef.current.y) : baseRotationRef.current.y;
+    // Dynamic mouse banking / cursor follow
+    const isFront = currentView === 'front';
+    const targetRotationX = isFront ? (-state.pointer.y * 0.35 + baseRotationRef.current.x) : baseRotationRef.current.x;
+    const targetRotationY = isFront ? (state.pointer.x * 0.45 + baseRotationRef.current.y) : baseRotationRef.current.y;
+    const targetRotationZ = isFront ? (-state.pointer.x * 0.2 + baseRotationRef.current.z) : baseRotationRef.current.z;
 
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
+    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.08);
 
-      const targetPosX = state.pointer.x * 0.4;
-      const targetPosY = state.pointer.y * 0.4;
+    const targetPosX = state.pointer.x * 0.5;
+    const targetPosY = state.pointer.y * 0.35;
 
-      groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
-      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
-      groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 1.5) * 0.0015;
-    } else {
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, baseRotationRef.current.x, 0.08);
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, baseRotationRef.current.y, 0.08);
-      groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.08);
-      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, 0.08);
-    }
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
+    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
+    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.002;
   });
 
   return (
@@ -182,32 +192,32 @@ function StarfighterModel({ isFixed, scrollScale = 1, targetBaseRotation = [0, 0
         </group>
 
         {/* Wingtip Laser Cannons */}
-        <LaserCannons pointer={pointerRef.current} isFixed={isFixed} />
+        <LaserCannons pointer={pointerRef.current} />
 
-        {/* Dynamic View Hotspots */}
-        {isFixed && (
+        {/* Dynamic View Hotspots - Always accessible when model is visible */}
+        {scrollScale > 0.2 && (
           <group>
             {currentView === 'front' && (
               <>
-                <Hotspot label="Left" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Right" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Top" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+                <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
               </>
             )}
 
             {currentView === 'back' && (
               <>
-                <Hotspot label="Right" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Left" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Top" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-                <Hotspot label="Front" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
+                <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+                <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
               </>
             )}
 
             {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
               <>
                 <Hotspot label="Front" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
-                <Hotspot label="Rear" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
+                <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
               </>
             )}
           </group>
@@ -408,7 +418,7 @@ const HeroSection = () => {
       </div>
 
       {/* 3D Cosmos and Spaceship Canvas - Transparent to let OG ParticleBackground show */}
-      <div className="middle-3d-model absolute inset-0 z-0 pointer-events-auto flex items-center justify-center overflow-hidden">
+      <div className="middle-3d-model absolute inset-0 z-10 pointer-events-auto flex items-center justify-center overflow-hidden">
         <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full">
           <ambientLight intensity={1.8} />
           <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={4 + (modelScaleProgress * 6)} color="#ffffff" />
@@ -419,9 +429,9 @@ const HeroSection = () => {
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
             <HeroStarStreaks progress={modelScaleProgress} />
           </group>
-          <PresentationControls global cursor={false} speed={3} config={{ mass: 1, tension: 800 }} snap={{ mass: 1.5, tension: 1000 }} rotation={[0, 0, 0]} polar={[-Math.PI / 2.5, Math.PI / 2.5]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
+          <PresentationControls global cursor={false} speed={2.5} config={{ mass: 1, tension: 800 }} snap={{ mass: 1.5, tension: 1000 }} rotation={[0, 0, 0]} polar={[-Math.PI / 2.5, Math.PI / 2.5]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
             <group position={[0, isMobile ? 1.8 : 0, 0]}>
-              <StarfighterModel isFixed={isModelFixed} scrollScale={modelScaleProgress} targetBaseRotation={viewRotations[activeView]} currentView={activeView} onViewChange={setActiveView} />
+              <StarfighterModel scrollScale={modelScaleProgress} targetBaseRotation={viewRotations[activeView]} currentView={activeView} onViewChange={setActiveView} />
             </group>
           </PresentationControls>
         </Canvas>
