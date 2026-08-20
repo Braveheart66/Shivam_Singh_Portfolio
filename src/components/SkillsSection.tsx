@@ -1,4 +1,4 @@
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useRef } from "react";
 
 const skillCategories = [
@@ -9,6 +9,59 @@ const skillCategories = [
   { title: "Databases & Vector DBs", skills: ["PostgreSQL", "Qdrant", "Redis", "SQL", "Vector Search"], color: "from-accent/80 to-primary/80" },
   { title: "DevOps & Certifications", skills: ["AWS ML Foundations", "AWS Agentic AI", "Oracle OCI GenAI Pro", "Docker", "Celery", "GitHub Actions", "Streamlit"], color: "from-primary to-primary/80" },
 ];
+
+const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: number; inView: boolean }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { damping: 20, stiffness: 200 });
+  const mouseYSpring = useSpring(y, { damping: 20, stiffness: 200 });
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      className="bg-card border border-border rounded-none p-6 md:p-8 group hover:border-primary/50 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
+    >
+      <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div style={{ transform: "translateZ(25px)" }}>
+        <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors">{cat.title}</h3>
+        <div className="flex flex-wrap gap-2">
+          {cat.skills.map((skill) => (
+            <span
+              key={skill}
+              className="px-2.5 py-1 text-xs bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-border transition-colors"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const SkillsSection = () => {
   const ref = useRef(null);
@@ -41,29 +94,7 @@ const SkillsSection = () => {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {skillCategories.map((cat, i) => (
-            <motion.div
-              key={cat.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="bg-card border border-border rounded-none p-6 md:p-8 group hover:border-primary/50 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
-            >
-              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-              <div>
-                <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors">{cat.title}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {cat.skills.map((skill, si) => (
-                    <span
-                      key={skill}
-                      className="px-2.5 py-1 text-xs bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-border transition-colors"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+            <SkillCard key={cat.title} cat={cat} i={i} inView={inView} />
           ))}
         </div>
       </div>

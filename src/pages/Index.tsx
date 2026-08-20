@@ -19,29 +19,27 @@ const Index = () => {
 
   return (
     <>
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {loading && <LoadingScreen onFinished={() => setLoading(false)} />}
       </AnimatePresence>
 
-      {!loading && (
-        <SmoothScroll>
-          <div className="min-h-screen bg-background text-foreground">
-            <ParticleBackground />
-            <ScrollProgress />
-            <CursorGlow />
-            <Navbar />
-            <main>
-              <HeroSection />
-              <AboutSection />
-              <SkillsSection />
-              <ProjectsSection />
-              <ExperienceSection />
-              <ContactSection />
-            </main>
-            <Footer />
-          </div>
-        </SmoothScroll>
-      )}
+      <SmoothScroll>
+        <div className="min-h-screen bg-background text-foreground relative">
+          <ParticleBackground />
+          <ScrollProgress />
+          <CursorGlow />
+          <Navbar />
+          <main>
+            <HeroSection />
+            <AboutSection />
+            <SkillsSection />
+            <ProjectsSection />
+            <ExperienceSection />
+            <ContactSection />
+          </main>
+          <Footer />
+        </div>
+      </SmoothScroll>
     </>
   );
 };
