@@ -1,5 +1,5 @@
 import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const skillCategories = [
   { title: "Languages", skills: ["Python", "Java", "SQL", "C", "HTML/CSS"], color: "from-primary to-primary/60" },
