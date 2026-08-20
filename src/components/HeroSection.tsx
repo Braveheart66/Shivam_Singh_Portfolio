@@ -148,12 +148,11 @@ function LaserCannons({ pointer }: { pointer: { x: number; y: number } }) {
   return <group ref={groupRef} />;
 }
 
-function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, ...props }: { isFixed: boolean, scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void } & any) {
+function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, globalMouse, ...props }: { isFixed: boolean, scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void, globalMouse: React.RefObject<{ x: number; y: number }> } & any) {
   const { scene } = useGLTF("/star_wars_ship.glb");
   const [scale, setScale] = useState<[number, number, number]>([4, 4, 4]);
   const groupRef = useRef<THREE.Group>(null);
   const baseRotationRef = useRef(new THREE.Euler(0, 0, 0));
-  const pointerRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleResize = () => {
@@ -167,8 +166,9 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
   useFrame((state) => {
     if (!groupRef.current) return;
 
-    pointerRef.current.x = state.pointer.x;
-    pointerRef.current.y = state.pointer.y;
+    // Use global mouse coords instead of R3F state.pointer
+    const mx = globalMouse.current?.x ?? 0;
+    const my = globalMouse.current?.y ?? 0;
 
     // Smooth Euler lerp to target view angle
     baseRotationRef.current.x = THREE.MathUtils.lerp(baseRotationRef.current.x, targetBaseRotation[0], 0.06);
@@ -178,16 +178,16 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
     // Dynamic mouse banking / cursor follow when spaceship is scrolled into view
     if (scrollScale > 0.15 || isFixed) {
       const isFront = currentView === 'front';
-      const targetRotationX = isFront ? (-state.pointer.y * 0.45 + baseRotationRef.current.x) : baseRotationRef.current.x;
-      const targetRotationY = isFront ? (state.pointer.x * 0.55 + baseRotationRef.current.y) : baseRotationRef.current.y;
-      const targetRotationZ = isFront ? (-state.pointer.x * 0.28 + baseRotationRef.current.z) : baseRotationRef.current.z;
+      const targetRotationX = isFront ? (-my * 0.45 + baseRotationRef.current.x) : baseRotationRef.current.x;
+      const targetRotationY = isFront ? (mx * 0.55 + baseRotationRef.current.y) : baseRotationRef.current.y;
+      const targetRotationZ = isFront ? (-mx * 0.28 + baseRotationRef.current.z) : baseRotationRef.current.z;
 
       groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
       groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.08);
 
-      const targetPosX = state.pointer.x * 0.55;
-      const targetPosY = state.pointer.y * 0.4;
+      const targetPosX = mx * 0.55;
+      const targetPosY = my * 0.4;
 
       groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
@@ -208,7 +208,7 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
         </group>
 
         {/* Wingtip Laser Cannons */}
-        <LaserCannons pointer={pointerRef.current} />
+        <LaserCannons pointer={globalMouse.current ?? { x: 0, y: 0 }} />
 
         {/* Dynamic View Hotspots - Visible once spaceship is zoomed in */}
         {scrollScale > 0.45 && (
@@ -315,6 +315,7 @@ const HeroSection = () => {
   const textRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
+  const globalMouseRef = useRef({ x: 0, y: 0 });
 
   const [text, setText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
@@ -323,12 +324,24 @@ const HeroSection = () => {
   const [isModelFixed, setIsModelFixed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeView, setActiveView] = useState('front');
+  const [heroScrolledPast, setHeroScrolledPast] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Global mouse tracker — works even when pointer is over text overlays
+  useEffect(() => {
+    const handleGlobalMouse = (e: MouseEvent) => {
+      // Normalize to -1..1 range like R3F's state.pointer
+      globalMouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      globalMouseRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener('mousemove', handleGlobalMouse, { passive: true });
+    return () => window.removeEventListener('mousemove', handleGlobalMouse);
   }, []);
 
   const viewRotations: Record<string, [number, number, number]> = {
@@ -372,6 +385,7 @@ const HeroSection = () => {
             const newScale = gsap.utils.mapRange(scaleStart, scaleEnd, 0, 1, clampedProgress);
             setModelScaleProgress(newScale);
             setIsModelFixed(progress > scaleEnd);
+            setHeroScrolledPast(progress > 0.95);
 
             if (introRef.current) {
               if (progress > 0) {
@@ -437,10 +451,13 @@ const HeroSection = () => {
 
       {/* 3D Cosmos and Spaceship Canvas - Hidden at scroll=0, swoops in as scroll progresses */}
       <div
-        className="middle-3d-model absolute inset-0 z-0 pointer-events-auto flex items-center justify-center overflow-hidden transition-opacity duration-500"
-        style={{ opacity: modelScaleProgress > 0.02 ? 1 : 0 }}
+        className="middle-3d-model absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden transition-opacity duration-500"
+        style={{
+          opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
+          visibility: heroScrolledPast ? 'hidden' : 'visible',
+        }}
       >
-        <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full">
+        <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full" style={{ pointerEvents: 'none' }}>
           <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
           <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
           <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
@@ -458,6 +475,7 @@ const HeroSection = () => {
               targetBaseRotation={viewRotations[activeView]}
               currentView={activeView}
               onViewChange={setActiveView}
+              globalMouse={globalMouseRef}
             />
           </group>
         </Canvas>

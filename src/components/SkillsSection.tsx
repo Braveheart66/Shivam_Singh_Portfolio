@@ -95,7 +95,7 @@ const SkillsSection = () => {
   const parallaxY = useTransform(scrollYProgress, [0, 1], ["40px", "-40px"]);
 
   return (
-    <section id="skills" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative overflow-hidden" ref={sectionRef}>
+    <section id="skills" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative z-10 overflow-hidden" ref={sectionRef}>
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["60px", "-60px"]) }}
         className="absolute -left-40 top-1/2 w-[400px] h-[400px] rounded-full bg-accent/5 blur-[130px] pointer-events-none"
@@ -115,7 +115,7 @@ const SkillsSection = () => {
           </h2>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: '1000px' }}>
           {skillCategories.map((cat, i) => (
             <SkillCard key={cat.title} cat={cat} i={i} inView={inView} />
           ))}

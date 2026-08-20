@@ -85,7 +85,7 @@ const ExperienceSection = () => {
   }, { scope: containerRef });
 
   return (
-    <section id="experience" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative overflow-hidden" ref={containerRef}>
+    <section id="experience" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative z-10 overflow-hidden" ref={containerRef}>
       <div className="max-w-[90rem] mx-auto border-x border-border grid grid-cols-1 md:grid-cols-12 relative">
 
         {/* Left Column - Pinned */}
