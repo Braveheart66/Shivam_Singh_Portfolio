@@ -1,15 +1,14 @@
-# Parth Tyagi — Portfolio
+# Shivam Singh — Portfolio
 
-Welcome to the personal portfolio of **Parth Tyagi** — UI/UX Designer, AI Explorer, and Tech Innovator.
+Welcome to the personal portfolio of **Shivam Singh** — Software Engineer, Cloud Architect & AI Practitioner.
 
 This repository contains the source code for my interactive, 3D-enhanced portfolio website.
 
 ## 🚀 Features
 
-- **Immersive 3D Experience**: Integrated with Three.js and React Three Fiber to display an interactive 3D spaceship model and hyperloop animations.
+- **Immersive 3D Experience**: Integrated with Three.js and React Three Fiber to display an interactive 3D starfighter model and hyperloop animations.
 - **Smooth Scrolling & Animations**: Built using Lenis, GSAP, and Framer Motion for a fluid, dynamic user experience.
-- **Custom Cursor & Interactions**: A unique hollow ring cursor and interactive UI elements.
-- **Live Spotify Integration**: Displays live listening statistics directly from my Spotify account.
+- **Custom Cursor & Interactions**: A unique interactive cursor and responsive UI elements.
 - **Modern Tech Stack**: Developed with React, Vite, TypeScript, and styled with Tailwind CSS and shadcn/ui.
 - **Fully Responsive**: Optimized for desktop, tablet, and mobile viewing, maintaining aesthetics and functionality across devices.
 
@@ -34,7 +33,7 @@ Ensure you have Node.js installed on your machine.
 
 1. **Clone the repository:**
    ```bash
-   cd Parth-devfolio
+   cd Shivam-Devfolio
    ```
 
 2. **Install dependencies:**

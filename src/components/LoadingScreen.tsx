@@ -46,16 +46,11 @@ const StarStreaks = () => {
         if (!meshRef.current) return;
 
         const elapsed = state.clock.elapsedTime;
-        // Reversed Surge: moving away from camera (negative Z)
-        let speed = -0.6;
-        if (elapsed > 4.5) {
-            const t = Math.min((elapsed - 4.5) / 3, 1);
-            speed = THREE.MathUtils.lerp(-0.6, -50, t * t);
-        }
-
-        // Final surge boost at 97% completion (7.275s)
-        if (elapsed > 7.275) {
-            speed *= 1.5;
+        // Smooth initial warp acceleration
+        let speed = -1.2;
+        if (elapsed > 0.8) {
+            const t = Math.min((elapsed - 0.8) / 1.0, 1);
+            speed = THREE.MathUtils.lerp(-1.2, -45, t * t);
         }
 
         const pos = meshRef.current.geometry.attributes.position.array as Float32Array;
@@ -99,10 +94,10 @@ const LoadingScreen = ({ onFinished }: { onFinished: () => void }) => {
 
     useEffect(() => {
         const timers = [
-            setTimeout(() => setLoadingText("Synchronizing Neural Core..."), 2000),
-            setTimeout(() => setLoadingText("Loading Assets..."), 4000),
-            setTimeout(() => setLoadingText("Finalizing..."), 6000),
-            setTimeout(() => onFinished(), 7500)
+            setTimeout(() => setLoadingText("Synchronizing Core..."), 400),
+            setTimeout(() => setLoadingText("Engaging Hyperdrive..."), 900),
+            setTimeout(() => setLoadingText("Systems Nominal"), 1400),
+            setTimeout(() => onFinished(), 1700)
         ];
 
         return () => timers.forEach(t => clearTimeout(t));
@@ -111,43 +106,44 @@ const LoadingScreen = ({ onFinished }: { onFinished: () => void }) => {
     return (
         <motion.div
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: "blur(20px)" }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center overflow-hidden"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center overflow-hidden will-change-transform"
         >
             <div className="absolute inset-0 z-0">
-                <Canvas>
+                <Canvas dpr={[1, 1.5]} gl={{ antialias: true, powerPreference: "high-performance" }}>
                     <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={75} />
-                    <color attach="background" args={["#000"]} />
-                    <ambientLight intensity={0.5} />
+                    <color attach="background" args={["#000000"]} />
+                    <ambientLight intensity={0.8} />
                     <StarStreaks />
-                    <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                    <Stars radius={100} depth={50} count={2500} factor={4} saturation={0} fade speed={1.2} />
                 </Canvas>
             </div>
 
-            <div className="relative z-10 text-center">
+            <div className="relative z-10 text-center pointer-events-none">
                 <motion.div
                     key={loadingText}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
                     className="mb-8"
                 >
-                    <h2 className="text-white font-display text-xs tracking-[0.4em] uppercase opacity-50 mb-2">
+                    <h2 className="text-primary/70 font-display text-xs tracking-[0.4em] uppercase mb-2">
                         System Online
                     </h2>
-                    <p className="text-primary font-display text-xl font-bold tracking-widest uppercase">
+                    <p className="text-white font-display text-xl md:text-2xl font-bold tracking-widest uppercase drop-shadow-[0_0_15px_rgba(0,243,255,0.8)]">
                         {loadingText}
                     </p>
                 </motion.div>
 
-                {/* Simplified Loading Bar */}
-                <div className="w-64 h-[2px] bg-white/10 relative overflow-hidden mx-auto">
+                {/* Loading Bar */}
+                <div className="w-64 md:w-80 h-[3px] bg-white/10 relative overflow-hidden mx-auto rounded-full">
                     <motion.div
-                        className="absolute inset-0 bg-primary"
-                        initial={{ left: "-100%" }}
-                        animate={{ left: "0%" }}
-                        transition={{ duration: 7.5, ease: "easeIn" }}
+                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-accent shadow-[0_0_15px_rgba(0,243,255,1)]"
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 1.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                     />
                 </div>
             </div>

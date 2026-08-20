@@ -14,14 +14,13 @@ export const SmoothScroll: React.FC<SmoothScrollProps> = ({ children }) => {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth easing
-      direction: "vertical",
-      gestureDirection: "vertical",
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
     } as any);
 
     lenisRef.current = lenis;
@@ -29,17 +28,24 @@ export const SmoothScroll: React.FC<SmoothScrollProps> = ({ children }) => {
     // Sync Lenis scroll with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    // Sync GSAP ticker with Lenis
-    gsap.ticker.add((time) => {
+    // Sync GSAP ticker with Lenis with stored callback reference
+    const tickerUpdate = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
+
+    gsap.ticker.add(tickerUpdate);
     gsap.ticker.lagSmoothing(0);
 
+    const handleResize = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
+      gsap.ticker.remove(tickerUpdate);
       lenis.destroy();
-      gsap.ticker.remove((time) => {
-        lenis.raf(time * 1000);
-      });
     };
   }, []);
 

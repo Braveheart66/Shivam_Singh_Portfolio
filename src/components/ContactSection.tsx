@@ -23,28 +23,30 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="section-padding relative overflow-hidden" ref={sectionRef}>
+    <section id="contact" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative overflow-hidden" ref={sectionRef}>
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["60px", "-60px"]) }}
         className="absolute right-1/4 bottom-0 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[150px] pointer-events-none"
       />
 
-      <div className="max-w-4xl mx-auto relative" ref={ref}>
+      <div className="max-w-[90rem] mx-auto border-x border-border p-8 md:p-16 lg:p-20 relative" ref={ref}>
         <motion.div
           style={{ y: parallaxY }}
-          initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-          animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center mb-14"
         >
-          <p className="text-primary font-medium tracking-widest uppercase text-sm mb-3">Contact</p>
-          <h2 className="font-display text-2xl md:text-5xl font-bold mb-4">
-            Let's Build <span className="gradient-text">Together</span>
+          <p className="text-primary font-medium tracking-widest uppercase text-xs mb-3">Contact</p>
+          <h2 className="font-display text-3xl md:text-6xl font-bold uppercase tracking-tight mb-4">
+            Let's Build <span className="text-primary">Together</span>
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Have a project idea or just want to connect? I'd love to hear from you.
+          <p className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto">
+            Have a project idea, open role, or just want to connect? I'd love to hear from you.
           </p>
         </motion.div>
+
+        <div className="max-w-3xl mx-auto">
 
         <motion.form
           onSubmit={handleSubmit}
@@ -119,9 +121,9 @@ const ContactSection = () => {
           className="flex justify-center gap-6 mt-10"
         >
           {[
-            { icon: Github, href: "https://github.com/Parth844", label: "GitHub" },
-            { icon: Linkedin, href: "https://linkedin.com/in/parthtyagi-design", label: "LinkedIn" },
-            { icon: Mail, href: "mailto:Parthtyagi520@gmail.com", label: "Email" },
+            { icon: Github, href: "https://github.com/Braveheart66", label: "GitHub" },
+            { icon: Linkedin, href: "https://linkedin.com/in/shivam-singh-93ab0b2a7", label: "LinkedIn" },
+            { icon: Mail, href: "mailto:shivamsinghraghuvanshi1234@gmail.com", label: "Email" },
           ].map((social, i) => (
             <motion.a
               key={social.label}
@@ -140,6 +142,7 @@ const ContactSection = () => {
             </motion.a>
           ))}
         </motion.div>
+        </div>
       </div>
     </section>
   );

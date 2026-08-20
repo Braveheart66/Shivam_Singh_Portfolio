@@ -2,11 +2,12 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 const skillCategories = [
-  { title: "UI/UX Design", skills: ["Figma", "Adobe Illustrator", "Prototyping", "Wireframing"], color: "from-primary to-primary/60" },
-  { title: "Programming", skills: ["Python", "C++", "C#", "JavaScript", "HTML/CSS", "SQL"], color: "from-accent to-accent/60" },
-  { title: "AI & Computer Vision", skills: ["OpenCV", "FastAPI", "Deep Learning", "Face Recognition", "TensorFlow", "PyTorch"], color: "from-primary to-accent" },
-  { title: "AR & 3D", skills: ["Unity", "ARCore", "ARKit", "Blender", "Spatial Computing"], color: "from-primary/80 to-accent/80" },
-  { title: "Tools & Frameworks", skills: ["Git", "GitHub", "Docker", "Linux", "Xcode"], color: "from-accent/80 to-primary/80" },
+  { title: "Languages", skills: ["Python", "Java", "SQL", "C", "HTML/CSS"], color: "from-primary to-primary/60" },
+  { title: "AI / ML & GenAI", skills: ["Machine Learning", "Deep Learning", "NLP", "RAG", "LLM (Ollama/Qwen2.5)", "Generative AI", "PyTorch", "OpenCV"], color: "from-accent to-accent/60" },
+  { title: "Cloud & Serverless", skills: ["AWS Lambda", "AWS DynamoDB", "AWS S3", "AWS CDK", "Amazon Rekognition", "SageMaker A2I", "Cognito"], color: "from-primary to-accent" },
+  { title: "Frameworks & Libraries", skills: ["Django REST", "React + Vite", "scikit-learn", "Pandas", "NumPy", "Matplotlib", "shadcn/ui"], color: "from-primary/80 to-accent/80" },
+  { title: "Databases & Vector DBs", skills: ["PostgreSQL", "Qdrant", "Redis", "SQL", "Vector Search"], color: "from-accent/80 to-primary/80" },
+  { title: "DevOps & Certifications", skills: ["AWS ML Foundations", "AWS Agentic AI", "Oracle OCI GenAI Pro", "Docker", "Celery", "GitHub Actions", "Streamlit"], color: "from-primary to-primary/80" },
 ];
 
 const SkillsSection = () => {
@@ -18,23 +19,23 @@ const SkillsSection = () => {
   const parallaxY = useTransform(scrollYProgress, [0, 1], ["40px", "-40px"]);
 
   return (
-    <section id="skills" className="section-padding relative overflow-hidden" ref={sectionRef}>
+    <section id="skills" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative overflow-hidden" ref={sectionRef}>
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["60px", "-60px"]) }}
         className="absolute -left-40 top-1/2 w-[400px] h-[400px] rounded-full bg-accent/5 blur-[130px] pointer-events-none"
       />
 
-      <div className="max-w-6xl mx-auto relative" ref={ref}>
+      <div className="max-w-[90rem] mx-auto border-x border-border p-8 md:p-16 lg:p-20 relative" ref={ref}>
         <motion.div
           style={{ y: parallaxY }}
-          initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-          animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-14"
         >
-          <p className="text-primary font-medium tracking-widest uppercase text-sm mb-3">Skills</p>
-          <h2 className="font-display text-2xl md:text-5xl font-bold">
-            Tools & <span className="gradient-text">Technologies</span>
+          <p className="text-primary font-medium tracking-widest uppercase text-xs mb-3">Skills & Stack</p>
+          <h2 className="font-display text-3xl md:text-6xl font-bold uppercase tracking-tight">
+            Tools & <span className="text-primary">Technologies</span>
           </h2>
         </motion.div>
 
@@ -42,27 +43,25 @@ const SkillsSection = () => {
           {skillCategories.map((cat, i) => (
             <motion.div
               key={cat.title}
-              initial={{ opacity: 0, y: 40, rotateX: 8 }}
-              animate={inView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 * i, ease: [0.25, 0.46, 0.45, 0.94] }}
-              whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.3 } }}
-              className="glass rounded-xl p-6 group hover:border-primary/30 transition-all duration-500 hover:neon-glow relative overflow-hidden"
-              style={{ transformStyle: "preserve-3d" }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="bg-card border border-border rounded-none p-6 md:p-8 group hover:border-primary/50 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
             >
-              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              <h3 className="font-display font-semibold text-lg mb-4">{cat.title}</h3>
-              <div className="flex flex-wrap gap-2">
-                {cat.skills.map((skill, si) => (
-                  <motion.span
-                    key={skill}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={inView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.4, delay: 0.1 * i + 0.05 * si }}
-                    className="px-3 py-1.5 rounded-md text-sm bg-secondary text-secondary-foreground border border-border hover:border-primary/40 hover:text-primary transition-all duration-300"
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
+              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+              <div>
+                <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors">{cat.title}</h3>
+                <div className="flex flex-wrap gap-2">
+                  {cat.skills.map((skill, si) => (
+                    <span
+                      key={skill}
+                      className="px-2.5 py-1 text-xs bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-border transition-colors"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
             </motion.div>
           ))}

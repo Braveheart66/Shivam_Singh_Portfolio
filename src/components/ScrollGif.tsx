@@ -14,40 +14,47 @@ const ScrollGif = () => {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        let ticking = false;
+
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const currentScrollY = window.scrollY;
+                    const windowHeight = window.innerHeight;
+                    const documentHeight = Math.max(
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight,
+                        document.body.offsetHeight,
+                        document.documentElement.offsetHeight,
+                        document.body.clientHeight,
+                        document.documentElement.clientHeight
+                    );
 
-            const windowHeight = window.innerHeight;
-            const documentHeight = Math.max(
-                document.body.scrollHeight,
-                document.documentElement.scrollHeight,
-                document.body.offsetHeight,
-                document.documentElement.offsetHeight,
-                document.body.clientHeight,
-                document.documentElement.clientHeight
-            );
+                    const maxScroll = documentHeight - windowHeight;
+                    const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0;
+                    const safeProgress = Math.min(Math.max(progress, 0), 1);
+                    setScrollProgress(safeProgress);
 
-            const maxScroll = documentHeight - windowHeight;
-            const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0;
+                    if (currentScrollY < lastScrollY - 2) {
+                        setIsScrollingUp(true);
+                    } else if (currentScrollY > lastScrollY + 2) {
+                        setIsScrollingUp(false);
+                    }
 
-            const safeProgress = Math.min(Math.max(progress, 0), 1);
-            setScrollProgress(safeProgress);
+                    setLastScrollY(currentScrollY);
+                    setIsScrolling(true);
 
-            if (currentScrollY < lastScrollY - 2) {
-                setIsScrollingUp(true);
-            } else if (currentScrollY > lastScrollY + 2) {
-                setIsScrollingUp(false);
+                    if (timeoutRef.current) {
+                        clearTimeout(timeoutRef.current);
+                    }
+                    timeoutRef.current = setTimeout(() => {
+                        setIsScrolling(false);
+                    }, 150);
+
+                    ticking = false;
+                });
+                ticking = true;
             }
-
-            setLastScrollY(currentScrollY);
-
-            setIsScrolling(true);
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-            timeoutRef.current = setTimeout(() => {
-                setIsScrolling(false);
-            }, 150);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });

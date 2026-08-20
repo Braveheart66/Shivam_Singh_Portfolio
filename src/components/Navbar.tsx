@@ -28,9 +28,17 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="font-display text-xl font-bold neon-text">
-          PT<span className="text-foreground">.</span>
-        </button>
+        <motion.button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="group relative flex items-center gap-1.5 px-3 py-1 rounded-md border border-primary/30 bg-primary/10 hover:border-primary hover:bg-primary/20 backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.15)]"
+        >
+          <span className="text-primary font-mono text-sm tracking-wider">&lt;</span>
+          <span className="font-display font-black text-lg tracking-wider text-white group-hover:text-primary transition-colors">SS</span>
+          <span className="text-primary font-mono text-sm tracking-wider">/&gt;</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping opacity-80" />
+        </motion.button>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">

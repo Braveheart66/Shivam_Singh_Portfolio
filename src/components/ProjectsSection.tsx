@@ -8,10 +8,42 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
-  { title: "Lost-Buddy", desc: "Pioneering AI-driven search tool utilizing Deep Learning facial embeddings to achieve 98% identification accuracy for missing person cases.", tech: ["Python", "FastAPI", "Deep Learning"], gradient: "from-primary/20 to-accent/20", colSpan: "md:col-span-2", rowSpan: "md:row-span-2", link: "https://github.com/Parth844/Sih-chatbot-main" },
-  { title: "ARKITECH", desc: "Unity-based Augmented Reality (AR) tour platform for immersive 3D architectural visualization.", tech: ["Unity", "C#", "AR"], gradient: "from-accent/20 to-primary/20", colSpan: "md:col-span-1", rowSpan: "md:row-span-1", link: "https://github.com/Parth844/ARkitechs" },
-  { title: "LaneGuard AI", desc: "Intelligent Traffic Lane Enforcement System with automated violation tracking.", tech: ["Computer Vision", "Python"], gradient: "from-primary/20 to-primary/10", colSpan: "md:col-span-1", rowSpan: "md:row-span-1", link: "https://github.com/Parth844/LaneGuard-AI-Intelligent-Traffic-Lane-Enforcement-System" },
-  { title: "FaceID-Pro", desc: "Professional, real-time facial recognition web application.", tech: ["Flask", "dlib", "Python"], gradient: "from-accent/20 to-accent/10", colSpan: "md:col-span-2", rowSpan: "md:row-span-1", link: "https://github.com/Parth844/FaceID-Pro-Advanced-Facial-Recognition-System" },
+  {
+    title: "HITL Content Moderation Engine",
+    desc: "Serverless, event-driven content moderation pipeline on AWS CDK with Rekognition scoring, 3-tier routing (auto-approve, human review, quarantine), DynamoDB GSI querying, and SageMaker Ground Truth A2I reviewer portal.",
+    tech: ["AWS CDK", "Lambda", "Rekognition", "SageMaker A2I", "DynamoDB", "Streamlit"],
+    gradient: "from-primary/20 to-accent/20",
+    colSpan: "md:col-span-2",
+    rowSpan: "md:row-span-2",
+    link: "https://github.com/Braveheart66"
+  },
+  {
+    title: "NotyBrain – AI PKM System",
+    desc: "Full-stack, privacy-first knowledge management SPA with a local RAG pipeline (Qwen2.5 via Ollama), Qdrant vector search, grounded Q&A with citations, and Knowledge Graph API.",
+    tech: ["React + Vite", "Django REST", "Qdrant", "Ollama", "PostgreSQL", "Docker"],
+    gradient: "from-accent/20 to-primary/20",
+    colSpan: "md:col-span-1",
+    rowSpan: "md:row-span-1",
+    link: "https://github.com/Braveheart66"
+  },
+  {
+    title: "Drone-Based Deforestation AI",
+    desc: "AI-powered remote sensing pipeline using NDVI analysis and geospatial satellite imagery to detect and quantify temporal deforestation patterns.",
+    tech: ["Python", "Computer Vision", "NDVI Analysis", "Deep Learning", "Geospatial"],
+    gradient: "from-primary/20 to-primary/10",
+    colSpan: "md:col-span-1",
+    rowSpan: "md:row-span-1",
+    link: "https://github.com/Braveheart66"
+  },
+  {
+    title: "AI Driver Fatigue Drift Monitor",
+    desc: "Real-time fatigue monitoring framework modeling continuous temporal drift using BiLSTM-GRU architecture, weakly supervised MIL, and sub-20ms inference with XAI attributions.",
+    tech: ["PyTorch", "Computer Vision", "OpenCV", "Streamlit", "ONNX", "Docker"],
+    gradient: "from-accent/20 to-accent/10",
+    colSpan: "md:col-span-2",
+    rowSpan: "md:row-span-1",
+    link: "https://github.com/Braveheart66"
+  },
 ];
 
 const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
@@ -67,7 +99,7 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={`relative group bg-card border-b md:border-b-0 md:border-r border-border overflow-hidden block ${project.colSpan} ${project.rowSpan} last:border-r-0`}
+      className={`relative group bg-card border-b border-border md:border-b md:border-r last:border-b-0 md:last:border-b-0 border-border overflow-hidden block ${project.colSpan} ${project.rowSpan}`}
     >
       {/* Background Graphic Area */}
       <div
@@ -134,7 +166,7 @@ const ProjectsSection = () => {
   }, { scope: containerRef });
 
   return (
-    <section id="projects" className="border-b border-border bg-background relative overflow-hidden" ref={containerRef}>
+    <section id="projects" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative overflow-hidden" ref={containerRef}>
       <div className="max-w-[90rem] mx-auto border-x border-border grid grid-cols-1 md:grid-cols-12 relative">
 
         {/* Left Column - Pinned Title */}
