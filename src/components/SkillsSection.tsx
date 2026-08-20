@@ -11,28 +11,38 @@ const skillCategories = [
 ];
 
 const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: number; inView: boolean }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0, opacity: 0 });
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { damping: 20, stiffness: 200 });
-  const mouseYSpring = useSpring(y, { damping: 20, stiffness: 200 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+  const mouseXSpring = useSpring(x, { damping: 25, stiffness: 250 });
+  const mouseYSpring = useSpring(y, { damping: 25, stiffness: 250 });
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    setSpotlightPos({ x: mouseX, y: mouseY, opacity: 1 });
+
+    const xPct = mouseX / rect.width - 0.5;
+    const yPct = mouseY / rect.height - 0.5;
     x.set(xPct);
     y.set(yPct);
   };
 
   const handleMouseLeave = () => {
+    setSpotlightPos((prev) => ({ ...prev, opacity: 0 }));
     x.set(0);
     y.set(0);
   };
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
@@ -43,16 +53,29 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className="bg-card border border-border rounded-none p-6 md:p-8 group hover:border-primary/50 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
+      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_25px_rgba(0,243,255,0.15)]"
     >
+      {/* Top glowing accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-      <div style={{ transform: "translateZ(25px)" }}>
-        <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors">{cat.title}</h3>
+
+      {/* Dynamic Cursor Spotlight Sheen */}
+      <div
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(400px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.12), transparent 70%)`,
+        }}
+      />
+
+      <div style={{ transform: "translateZ(30px)" }}>
+        <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors flex items-center justify-between">
+          <span>{cat.title}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary group-hover:shadow-[0_0_8px_#00f3ff] transition-all" />
+        </h3>
         <div className="flex flex-wrap gap-2">
           {cat.skills.map((skill) => (
             <span
               key={skill}
-              className="px-2.5 py-1 text-xs bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-border transition-colors"
+              className="px-2.5 py-1 text-xs bg-secondary/80 text-secondary-foreground uppercase tracking-wider font-semibold border border-border/50 group-hover:border-primary/30 group-hover:text-foreground transition-all duration-300 rounded-md"
             >
               {skill}
             </span>

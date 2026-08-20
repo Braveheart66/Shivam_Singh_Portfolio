@@ -91,11 +91,23 @@ function LaserCannons({ pointer }: { pointer: { x: number; y: number } }) {
     });
   };
 
-  // Click / tap to fire lasers
+  // Safe pointerdown listener that never blocks input fields
   useEffect(() => {
     const handlePointerDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'BUTTON' || target.tagName === 'A' || target.closest('button') || target.closest('a'))) return;
+      if (!target) return;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'BUTTON' ||
+        target.tagName === 'A' ||
+        target.closest('input') ||
+        target.closest('textarea') ||
+        target.closest('button') ||
+        target.closest('a') ||
+        target.closest('form') ||
+        target.closest('#contact')
+      ) return;
       spawnLasers(pointer.x, pointer.y);
     };
     window.addEventListener("pointerdown", handlePointerDown);
@@ -136,7 +148,7 @@ function LaserCannons({ pointer }: { pointer: { x: number; y: number } }) {
   return <group ref={groupRef} />;
 }
 
-function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, ...props }: { scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void } & any) {
+function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0, 0], currentView = 'front', onViewChange, ...props }: { isFixed: boolean, scrollScale?: number, targetBaseRotation?: [number, number, number], currentView?: string, onViewChange?: (view: any) => void } & any) {
   const { scene } = useGLTF("/star_wars_ship.glb");
   const [scale, setScale] = useState<[number, number, number]>([4, 4, 4]);
   const groupRef = useRef<THREE.Group>(null);
@@ -145,7 +157,7 @@ function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], cur
 
   useEffect(() => {
     const handleResize = () => {
-      setScale(window.innerWidth < 768 ? [2.0, 2.0, 2.0] : [5.2, 5.2, 5.2]);
+      setScale(window.innerWidth < 768 ? [2.0, 2.0, 2.0] : [5.5, 5.5, 5.5]);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -159,33 +171,32 @@ function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], cur
     pointerRef.current.y = state.pointer.y;
 
     // Smooth Euler lerp to target view angle
-    baseRotationRef.current.x = THREE.MathUtils.lerp(baseRotationRef.current.x, targetBaseRotation[0], 0.08);
-    baseRotationRef.current.y = THREE.MathUtils.lerp(baseRotationRef.current.y, targetBaseRotation[1], 0.08);
-    baseRotationRef.current.z = THREE.MathUtils.lerp(baseRotationRef.current.z, targetBaseRotation[2], 0.08);
+    baseRotationRef.current.x = THREE.MathUtils.lerp(baseRotationRef.current.x, targetBaseRotation[0], 0.06);
+    baseRotationRef.current.y = THREE.MathUtils.lerp(baseRotationRef.current.y, targetBaseRotation[1], 0.06);
+    baseRotationRef.current.z = THREE.MathUtils.lerp(baseRotationRef.current.z, targetBaseRotation[2], 0.06);
 
-    // Dynamic mouse banking / cursor follow
-    const isFront = currentView === 'front';
-    const targetRotationX = isFront ? (-state.pointer.y * 0.45 + baseRotationRef.current.x) : baseRotationRef.current.x;
-    const targetRotationY = isFront ? (state.pointer.x * 0.55 + baseRotationRef.current.y) : baseRotationRef.current.y;
-    const targetRotationZ = isFront ? (-state.pointer.x * 0.25 + baseRotationRef.current.z) : baseRotationRef.current.z;
+    // Dynamic mouse banking / cursor follow when spaceship is scrolled into view
+    if (scrollScale > 0.15 || isFixed) {
+      const isFront = currentView === 'front';
+      const targetRotationX = isFront ? (-state.pointer.y * 0.45 + baseRotationRef.current.x) : baseRotationRef.current.x;
+      const targetRotationY = isFront ? (state.pointer.x * 0.55 + baseRotationRef.current.y) : baseRotationRef.current.y;
+      const targetRotationZ = isFront ? (-state.pointer.x * 0.28 + baseRotationRef.current.z) : baseRotationRef.current.z;
 
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.1);
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.1);
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.1);
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotationX, 0.08);
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotationY, 0.08);
+      groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotationZ, 0.08);
 
-    const targetPosX = state.pointer.x * 0.5;
-    const targetPosY = state.pointer.y * 0.35;
+      const targetPosX = state.pointer.x * 0.55;
+      const targetPosY = state.pointer.y * 0.4;
 
-    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
-    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
-    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.003;
+      groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosX, 0.08);
+      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosY, 0.08);
+    }
+    groupRef.current.position.y += Math.sin(state.clock.elapsedTime * 2) * 0.0025;
   });
 
-  // Keep Starfighter nicely scaled and visible
-  const effectiveScale = Math.max(0.65, scrollScale);
-
   return (
-    <group ref={groupRef} scale={effectiveScale}>
+    <group ref={groupRef} scale={Math.max(0.001, scrollScale)}>
       <group scale={scale}>
         <Center>
           <primitive object={scene} rotation={[0, 0, 0]} {...props} />
@@ -199,41 +210,40 @@ function StarfighterModel({ scrollScale = 1, targetBaseRotation = [0, 0, 0], cur
         {/* Wingtip Laser Cannons */}
         <LaserCannons pointer={pointerRef.current} />
 
-        {/* Dynamic View Hotspots - Always active and responsive */}
-        <group>
-          {currentView === 'front' && (
-            <>
-              <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-              <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-              <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-            </>
-          )}
+        {/* Dynamic View Hotspots - Visible once spaceship is zoomed in */}
+        {scrollScale > 0.45 && (
+          <group>
+            {currentView === 'front' && (
+              <>
+                <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+              </>
+            )}
 
-          {currentView === 'back' && (
-            <>
-              <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-              <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-              <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-              <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
-            </>
-          )}
+            {currentView === 'back' && (
+              <>
+                <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+                <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
+              </>
+            )}
 
-          {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
-            <>
-              <Hotspot label="Cockpit" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
-              <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
-            </>
-          )}
-        </group>
+            {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
+              <>
+                <Hotspot label="Cockpit" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
+                <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
+              </>
+            )}
+          </group>
+        )}
       </group>
     </group>
   );
 }
 
 const HeroStarStreaks = ({ progress }: { progress: number }) => {
-  // Only exists and appears when scrolling takes place (never behind the intro text)
-  if (progress <= 0.08) return null;
-
   const count = 300;
   const [lines, colors] = useMemo(() => {
     const positions = new Float32Array(count * 6);
@@ -247,74 +257,78 @@ const HeroStarStreaks = ({ progress }: { progress: number }) => {
       const y = Math.sin(angle) * radius;
       const z = Math.random() * -800;
       const length = 35 + Math.random() * 50;
+
       positions[i * 6] = x;
       positions[i * 6 + 1] = y;
       positions[i * 6 + 2] = z;
       positions[i * 6 + 3] = x;
       positions[i * 6 + 4] = y;
-      positions[i * 6 + 5] = z - length;
-      const color = new THREE.Color(colorPalette[Math.floor(Math.random() * colorPalette.length)]);
-      colors[i * 6] = color.r;
-      colors[i * 6 + 1] = color.g;
-      colors[i * 6 + 2] = color.b;
-      colors[i * 6 + 3] = color.r * 0.1;
-      colors[i * 6 + 4] = color.g * 0.1;
-      colors[i * 6 + 5] = color.b * 0.1;
+      positions[i * 6 + 5] = z + length;
+
+      const c = new THREE.Color(colorPalette[Math.floor(Math.random() * colorPalette.length)]);
+      colors[i * 6] = c.r;
+      colors[i * 6 + 1] = c.g;
+      colors[i * 6 + 2] = c.b;
+      colors[i * 6 + 3] = c.r;
+      colors[i * 6 + 4] = c.g;
+      colors[i * 6 + 5] = c.b;
     }
     return [positions, colors];
   }, []);
 
-  const meshRef = useRef<THREE.LineSegments>(null);
-  useFrame(() => {
-    if (!meshRef.current) return;
-    const pos = meshRef.current.geometry.attributes.position.array as Float32Array;
-    const speed = 4.5;
+  const linesRef = useRef<THREE.LineSegments>(null);
+
+  useFrame((_, delta) => {
+    if (!linesRef.current) return;
+    const pos = linesRef.current.geometry.attributes.position.array as Float32Array;
+    const speed = 1200 * Math.max(0.2, progress);
+
     for (let i = 0; i < count; i++) {
-      pos[i * 6 + 2] += speed;
-      pos[i * 6 + 5] += speed;
-      if (pos[i * 6 + 2] > 100) {
-        pos[i * 6 + 2] = -800;
-        pos[i * 6 + 5] = -850;
+      pos[i * 6 + 2] += speed * delta;
+      pos[i * 6 + 5] += speed * delta;
+
+      if (pos[i * 6 + 2] > 20) {
+        const resetZ = -600 - Math.random() * 200;
+        const length = 35 + Math.random() * 50;
+        pos[i * 6 + 2] = resetZ;
+        pos[i * 6 + 5] = resetZ + length;
       }
     }
-    meshRef.current.geometry.attributes.position.needsUpdate = true;
+    linesRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
-  const streakOpacity = Math.min(0.6, (progress - 0.08) * 1.6);
-
   return (
-    <group position={[0, 2, 0]}>
-      <lineSegments ref={meshRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={lines.length / 3} array={lines} itemSize={3} />
-          <bufferAttribute attach="attributes-color" count={colors.length / 3} array={colors} itemSize={3} />
-        </bufferGeometry>
-        <lineBasicMaterial vertexColors transparent opacity={streakOpacity} blending={THREE.AdditiveBlending} />
-      </lineSegments>
-    </group>
+    <lineSegments ref={linesRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={count * 2} array={lines} itemSize={3} />
+        <bufferAttribute attach="attributes-color" count={count * 2} array={colors} itemSize={3} />
+      </bufferGeometry>
+      <lineBasicMaterial vertexColors transparent opacity={Math.min(1, progress * 1.5)} blending={THREE.AdditiveBlending} linewidth={2} />
+    </lineSegments>
   );
 };
 
 useGLTF.preload("/star_wars_ship.glb");
 
 const HeroSection = () => {
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [text, setText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const buttonsRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
-  const [isModelFixed, setIsModelFixed] = useState(false);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
+  const [text, setText] = useState("");
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [modelScaleProgress, setModelScaleProgress] = useState(0);
-  const [activeView, setActiveView] = useState<'front' | 'back' | 'left' | 'right' | 'top'>('front');
+  const [isModelFixed, setIsModelFixed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeView, setActiveView] = useState('front');
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const viewRotations: Record<string, [number, number, number]> = {
@@ -351,8 +365,8 @@ const HeroSection = () => {
           pinSpacing: true,
           anticipatePin: 1,
           onUpdate: (self) => {
-            const scaleStart = 0.02;
-            const scaleEnd = 0.75;
+            const scaleStart = 0.05;
+            const scaleEnd = 0.85;
             const progress = self.progress;
             const clampedProgress = gsap.utils.clamp(scaleStart, scaleEnd, progress);
             const newScale = gsap.utils.mapRange(scaleStart, scaleEnd, 0, 1, clampedProgress);
@@ -363,14 +377,15 @@ const HeroSection = () => {
               if (progress > 0) {
                 if (tl.isActive()) tl.progress(1);
 
-                const introScroll = gsap.utils.clamp(0, 1, progress / 0.22);
+                const introScroll = gsap.utils.clamp(0, 1, progress / 0.18);
                 gsap.set(introRef.current, {
-                  opacity: Math.max(0, 1 - introScroll * 1.4),
-                  y: -introScroll * 140,
-                  scale: 1 - introScroll * 0.05,
+                  opacity: Math.max(0, 1 - introScroll * 1.3),
+                  y: -introScroll * 350,
+                  scale: 1 + introScroll * 0.15,
+                  filter: `blur(${introScroll * 10}px)`
                 });
               } else if (progress === 0 && !tl.isActive()) {
-                gsap.set(introRef.current, { opacity: 1, y: 0, scale: 1 });
+                gsap.set(introRef.current, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" });
               }
             }
           }
@@ -420,13 +435,16 @@ const HeroSection = () => {
         </p>
       </div>
 
-      {/* 3D Cosmos and Spaceship Canvas - Transparent to let OG ParticleBackground show */}
-      <div className="middle-3d-model absolute inset-0 z-10 pointer-events-auto flex items-center justify-center overflow-hidden">
+      {/* 3D Cosmos and Spaceship Canvas - Hidden at scroll=0, swoops in as scroll progresses */}
+      <div
+        className="middle-3d-model absolute inset-0 z-0 pointer-events-auto flex items-center justify-center overflow-hidden transition-opacity duration-500"
+        style={{ opacity: modelScaleProgress > 0.02 ? 1 : 0 }}
+      >
         <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} camera={{ fov: 45, position: [0, 0, 15] }} className="w-full h-full">
-          <ambientLight intensity={1.8} />
-          <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={4 + (modelScaleProgress * 6)} color="#ffffff" />
-          <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={4 + modelScaleProgress * 8} color="#00f3ff" />
-          <pointLight position={[-10, -10, -10]} intensity={2} color="#0078ff" />
+          <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
+          <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
+          <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
+          <pointLight position={[-10, -10, -10]} intensity={1 + (modelScaleProgress * 3)} color="#0078ff" />
 
           {/* Star streaks only appear when scrolling */}
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
@@ -434,7 +452,13 @@ const HeroSection = () => {
           </group>
 
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
-            <StarfighterModel scrollScale={modelScaleProgress} targetBaseRotation={viewRotations[activeView]} currentView={activeView} onViewChange={setActiveView} />
+            <StarfighterModel
+              isFixed={isModelFixed}
+              scrollScale={modelScaleProgress}
+              targetBaseRotation={viewRotations[activeView]}
+              currentView={activeView}
+              onViewChange={setActiveView}
+            />
           </group>
         </Canvas>
       </div>

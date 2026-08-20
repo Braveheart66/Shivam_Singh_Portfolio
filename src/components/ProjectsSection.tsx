@@ -48,29 +48,29 @@ const projects = [
 
 const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
   const [hovered, setHovered] = useState(false);
-  const cardRef = useRef(null);
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0, opacity: 0 });
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const inView = useInView(cardRef, { once: true, margin: "-50px" });
 
-  // 3D Tilt Effect Setup (subtler for bento)
+  // 3D Tilt Effect Setup
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mouseXSpring = useSpring(x, { damping: 25, stiffness: 250 });
+  const mouseYSpring = useSpring(y, { damping: 25, stiffness: 250 });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["9deg", "-9deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-9deg", "9deg"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
+    setSpotlightPos({ x: mouseX, y: mouseY, opacity: 1 });
 
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
+    const xPct = mouseX / rect.width - 0.5;
+    const yPct = mouseY / rect.height - 0.5;
 
     x.set(xPct);
     y.set(yPct);
@@ -78,6 +78,7 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
 
   const handleMouseLeave = () => {
     setHovered(false);
+    setSpotlightPos((prev) => ({ ...prev, opacity: 0 }));
     x.set(0);
     y.set(0);
   };
@@ -99,8 +100,16 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={`relative group bg-card border-b border-border md:border-b md:border-r last:border-b-0 md:last:border-b-0 border-border overflow-hidden block ${project.colSpan} ${project.rowSpan}`}
+      className={`relative group bg-card border-b border-border md:border-b md:border-r last:border-b-0 md:last:border-b-0 overflow-hidden block ${project.colSpan} ${project.rowSpan} hover:border-primary/50 transition-colors duration-300`}
     >
+      {/* Dynamic Cursor Spotlight Sheen */}
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10"
+        style={{
+          background: `radial-gradient(450px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.14), transparent 70%)`,
+        }}
+      />
+
       {/* Background Graphic Area */}
       <div
         className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-20 group-hover:opacity-40 transition-opacity duration-500`}
@@ -113,9 +122,9 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
         />
       </div>
 
-      <div className="relative z-10 p-8 md:p-12 h-full flex flex-col" style={{ transform: "translateZ(30px)" }}>
+      <div className="relative z-20 p-8 md:p-12 h-full flex flex-col" style={{ transform: "translateZ(30px)" }}>
         <div className="flex justify-between items-start mb-6">
-          <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground">
+          <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
             {project.title}
           </h3>
           <motion.div
@@ -126,11 +135,11 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
           </motion.div>
         </div>
 
-        <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-md flex-grow">{project.desc}</p>
+        <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-md flex-grow leading-relaxed">{project.desc}</p>
 
         <div className="flex flex-wrap gap-2 mt-auto">
           {project.tech.map((t) => (
-            <span key={t} className="text-xs px-3 py-1 bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-border transition-colors">
+            <span key={t} className="text-xs px-3 py-1 bg-secondary text-secondary-foreground uppercase tracking-wider font-semibold border border-transparent group-hover:border-primary/30 group-hover:text-foreground transition-colors rounded-md">
               {t}
             </span>
           ))}
