@@ -12,32 +12,26 @@ const skillCategories = [
 
 const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: number; inView: boolean }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0, opacity: 0 });
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { damping: 25, stiffness: 250 });
-  const mouseYSpring = useSpring(y, { damping: 25, stiffness: 250 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    setSpotlightPos({ x: mouseX, y: mouseY, opacity: 1 });
+    setSpotlightPos({ x: mouseX, y: mouseY });
 
-    const xPct = mouseX / rect.width - 0.5;
-    const yPct = mouseY / rect.height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
+    const xPct = (mouseX / rect.width - 0.5) * 2; // -1 to 1
+    const yPct = (mouseY / rect.height - 0.5) * 2; // -1 to 1
+    setRotate({ x: -yPct * 10, y: xPct * 10 });
   };
 
+  const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
-    setSpotlightPos((prev) => ({ ...prev, opacity: 0 }));
-    x.set(0);
-    y.set(0);
+    setIsHovered(false);
+    setRotate({ x: 0, y: 0 });
   };
 
   return (
@@ -47,27 +41,30 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
       onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -4, scale: 1.02 }}
       style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
+        transform: isHovered
+          ? `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-4px)`
+          : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)',
+        transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
+        transformStyle: 'preserve-3d',
       }}
-      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-[border-color,box-shadow,background-color] duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_25px_rgba(0,243,255,0.15)] cursor-pointer"
+      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-colors duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_30px_rgba(0,243,255,0.2)] cursor-pointer select-none"
     >
       {/* Top glowing accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
       {/* Dynamic Cursor Spotlight Sheen */}
       <div
-        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px rounded-xl transition-opacity duration-300"
         style={{
-          background: `radial-gradient(400px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.12), transparent 70%)`,
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(350px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.18), transparent 70%)`,
         }}
       />
 
-      <div style={{ transform: "translateZ(30px)" }}>
+      <div style={{ transform: "translateZ(25px)" }}>
         <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors flex items-center justify-between">
           <span>{cat.title}</span>
           <span className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary group-hover:shadow-[0_0_8px_#00f3ff] transition-all" />

@@ -48,39 +48,27 @@ const projects = [
 
 const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
   const [hovered, setHovered] = useState(false);
-  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0, opacity: 0 });
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLAnchorElement>(null);
   const inView = useInView(cardRef, { once: true, margin: "-50px" });
-
-  // 3D Tilt Effect Setup
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { damping: 25, stiffness: 250 });
-  const mouseYSpring = useSpring(y, { damping: 25, stiffness: 250 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["9deg", "-9deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-9deg", "9deg"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    setSpotlightPos({ x: mouseX, y: mouseY, opacity: 1 });
+    setSpotlightPos({ x: mouseX, y: mouseY });
 
-    const xPct = mouseX / rect.width - 0.5;
-    const yPct = mouseY / rect.height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
+    const xPct = (mouseX / rect.width - 0.5) * 2;
+    const yPct = (mouseY / rect.height - 0.5) * 2;
+    setRotate({ x: -yPct * 8, y: xPct * 8 });
   };
 
+  const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => {
     setHovered(false);
-    setSpotlightPos((prev) => ({ ...prev, opacity: 0 }));
-    x.set(0);
-    y.set(0);
+    setRotate({ x: 0, y: 0 });
   };
 
   return (
@@ -93,20 +81,23 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: 0.1 * i, ease: "easeOut" }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
+        transform: hovered
+          ? `perspective(1200px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-2px)`
+          : 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0px)',
+        transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
+        transformStyle: 'preserve-3d',
       }}
-      className={`relative group bg-card border-b border-border md:border-b md:border-r last:border-b-0 md:last:border-b-0 overflow-hidden block ${project.colSpan} ${project.rowSpan} hover:border-primary/50 transition-colors duration-300`}
+      className={`relative group bg-card border-b border-border md:border-b md:border-r last:border-b-0 md:last:border-b-0 overflow-hidden block ${project.colSpan} ${project.rowSpan} hover:border-primary/50 transition-colors duration-300 cursor-pointer`}
     >
       {/* Dynamic Cursor Spotlight Sheen */}
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10"
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300 z-10"
         style={{
-          background: `radial-gradient(450px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.14), transparent 70%)`,
+          opacity: hovered ? 1 : 0,
+          background: `radial-gradient(450px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.18), transparent 70%)`,
         }}
       />
 
@@ -122,7 +113,7 @@ const ProjectCard = ({ project, i }: { project: typeof projects[0]; i: number })
         />
       </div>
 
-      <div className="relative z-20 p-8 md:p-12 h-full flex flex-col" style={{ transform: "translateZ(30px)" }}>
+      <div className="relative z-20 p-8 md:p-12 h-full flex flex-col" style={{ transform: "translateZ(25px)" }}>
         <div className="flex justify-between items-start mb-6">
           <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors">
             {project.title}
