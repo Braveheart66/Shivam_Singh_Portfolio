@@ -487,21 +487,20 @@ const HeroSection = () => {
         style={{
           opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
           display: heroScrolledPast ? 'none' : 'flex',
-          pointerEvents: 'auto', // ✅ Container always interactive
+          pointerEvents: 'auto',
         }}
       >
         <Canvas
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           camera={{ fov: 45, position: [0, 0, 15] }}
-          className="w-full h-full canvas-no-events" // ✅ Only THIS Canvas
+          className="w-full h-full canvas-no-events"
         >
           <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
           <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
           <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
           <pointLight position={[-10, -10, -10]} intensity={1 + (modelScaleProgress * 3)} color="#0078ff" />
 
-          {/* Star streaks only appear when scrolling */}
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
             <HeroStarStreaks progress={modelScaleProgress} />
           </group>
