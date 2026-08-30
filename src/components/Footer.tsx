@@ -12,29 +12,29 @@ export const socialMenuItems = [
     title: "GitHub",
     icon: <Github size={22} />,
     href: "https://github.com/Braveheart66",
-    gradientFrom: "#24292e",
+    gradientFrom: "#18181b",
     gradientTo: "#00f3ff",
   },
   {
     title: "LinkedIn",
     icon: <Linkedin size={22} />,
     href: "https://linkedin.com/in/shivam-singh-93ab0b2a7",
-    gradientFrom: "#0077B5",
+    gradientFrom: "#004aad",
     gradientTo: "#00f3ff",
   },
   {
     title: "LeetCode",
     icon: <LeetCodeIcon size={22} />,
     href: "https://leetcode.com/u/ShivamSingh_44/",
-    gradientFrom: "#FFA116",
-    gradientTo: "#FF5E62",
+    gradientFrom: "#d97706",
+    gradientTo: "#00f3ff",
   },
   {
     title: "Email",
     icon: <Mail size={22} />,
     href: "mailto:shivamsinghraghuvanshi1234@gmail.com",
-    gradientFrom: "#EA4335",
-    gradientTo: "#f434e2",
+    gradientFrom: "#0284c7",
+    gradientTo: "#00f3ff",
   },
 ];
 
@@ -50,7 +50,7 @@ export const GradientSocialMenu = () => {
               "--gradient-to": gradientTo,
             } as React.CSSProperties
           }
-          className="relative w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] bg-[#18181b] border border-white/10 shadow-lg rounded-full flex items-center justify-center transition-all duration-500 hover:w-[160px] sm:hover:w-[180px] hover:shadow-none group cursor-pointer"
+          className="relative w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] bg-[#111317] border border-white/10 shadow-lg rounded-full flex items-center justify-center transition-all duration-500 hover:w-[160px] sm:hover:w-[180px] hover:shadow-none group cursor-pointer"
         >
           <a
             href={href}
@@ -63,7 +63,7 @@ export const GradientSocialMenu = () => {
             <span className="absolute inset-0 rounded-full bg-[linear-gradient(45deg,var(--gradient-from),var(--gradient-to))] opacity-0 transition-all duration-500 group-hover:opacity-100"></span>
 
             {/* Blur glow */}
-            <span className="absolute top-[10px] inset-x-0 h-full rounded-full bg-[linear-gradient(45deg,var(--gradient-from),var(--gradient-to))] blur-[15px] opacity-0 -z-10 transition-all duration-500 group-hover:opacity-50"></span>
+            <span className="absolute top-[10px] inset-x-0 h-full rounded-full bg-[linear-gradient(45deg,var(--gradient-from),var(--gradient-to))] blur-[15px] opacity-0 -z-10 transition-all duration-500 group-hover:opacity-60"></span>
 
             {/* Icon */}
             <span className="relative z-10 transition-all duration-500 group-hover:scale-0 delay-0 text-white/80 group-hover:text-white">
@@ -89,7 +89,7 @@ const Footer = () => (
 
       <div className="flex flex-col sm:flex-row items-center justify-between w-full pt-6 border-t border-border/40 text-xs font-mono text-muted-foreground gap-4">
         <p>
-          © 2025 <span className="text-primary font-bold">Shivam Singh</span>. Engineered with AI, React & Three.js.
+          <span className="text-primary font-bold">Shivam Singh</span> — Architecting Scalable Cloud Systems & Intelligent AI Backends.
         </p>
 
         <button

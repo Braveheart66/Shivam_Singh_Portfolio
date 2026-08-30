@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { MetalButton } from "@/components/ui/button";
-import { GradientSocialMenu } from "./Footer";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -155,16 +154,6 @@ const ContactSection = () => {
             </MetalButton>
           </div>
         </motion.form>
-
-        {/* Expanding Gradient Social Menu */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-10"
-        >
-          <GradientSocialMenu />
-        </motion.div>
         </div>
       </div>
     </section>
