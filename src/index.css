@@ -131,6 +131,7 @@
 }
 
 /* ─── Pointer Events Fix for Canvas ─────────────────────────────────── */
+.middle-3d-model canvas,
 canvas.canvas-no-events {
   pointer-events: none !important;
 }

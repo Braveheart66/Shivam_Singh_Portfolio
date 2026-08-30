@@ -483,11 +483,10 @@ const HeroSection = () => {
 
       {/* 3D Cosmos and Spaceship Canvas */}
       <div
-        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-500"
+        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-500 pointer-events-none"
         style={{
           opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
-          display: heroScrolledPast ? 'none' : 'flex',
-          pointerEvents: 'auto',
+          display: (modelScaleProgress > 0.02 && !heroScrolledPast) ? 'flex' : 'none',
         }}
       >
         <Canvas
