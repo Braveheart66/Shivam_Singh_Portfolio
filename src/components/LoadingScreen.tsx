@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Stars, PerspectiveCamera } from "@react-three/drei";
+import { Stars, PerspectiveCamera, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
 
@@ -88,24 +88,53 @@ const StarStreaks = () => {
 };
 
 const LoadingScreen = ({ onFinished }: { onFinished: () => void }) => {
-    const [loadingText, setLoadingText] = useState("Initializing Systems...");
+    const { progress: realProgress, active } = useProgress();
+    const [displayPercent, setDisplayPercent] = useState(0);
+    const [loadingText, setLoadingText] = useState("Initializing Core Systems...");
 
     useEffect(() => {
-        const timers = [
-            setTimeout(() => setLoadingText("Synchronizing Core..."), 300),
-            setTimeout(() => setLoadingText("Engaging Hyperdrive..."), 700),
-            setTimeout(() => setLoadingText("Systems Nominal"), 1100),
-            setTimeout(() => onFinished(), 1350)
-        ];
+        // Smoothly interpolate percentage towards realProgress
+        const interval = setInterval(() => {
+            setDisplayPercent((prev) => {
+                const target = Math.max(prev, Math.round(realProgress));
+                if (prev < target) return prev + 2;
+                if (prev < 90 && active) return prev + 1;
+                return prev;
+            });
+        }, 30);
 
-        return () => timers.forEach(t => clearTimeout(t));
-    }, [onFinished]);
+        return () => clearInterval(interval);
+    }, [realProgress, active]);
+
+    useEffect(() => {
+        if (displayPercent < 35) {
+            setLoadingText("Initializing Neural Engine...");
+        } else if (displayPercent < 70) {
+            setLoadingText("Streaming 3D Starfighter Core...");
+        } else if (displayPercent < 99) {
+            setLoadingText("Engaging Hyperdrive Systems...");
+        } else {
+            setLoadingText("Systems Nominal — Online");
+            const timer = setTimeout(() => {
+                onFinished();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [displayPercent, onFinished]);
+
+    // Safety timeout in case of cached or offline state
+    useEffect(() => {
+        const fallback = setTimeout(() => {
+            setDisplayPercent(100);
+        }, 3500);
+        return () => clearTimeout(fallback);
+    }, []);
 
     return (
         <motion.div
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center overflow-hidden will-change-transform"
         >
             <div className="absolute inset-0 z-0">
@@ -118,30 +147,28 @@ const LoadingScreen = ({ onFinished }: { onFinished: () => void }) => {
                 </Canvas>
             </div>
 
-            <div className="relative z-10 text-center pointer-events-none">
+            <div className="relative z-10 text-center pointer-events-none px-4">
                 <motion.div
                     key={loadingText}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.25 }}
+                    transition={{ duration: 0.2 }}
                     className="mb-8"
                 >
-                    <h2 className="text-primary/70 font-display text-xs tracking-[0.4em] uppercase mb-2">
-                        System Online
+                    <h2 className="text-primary/70 font-mono text-xs tracking-[0.4em] uppercase mb-2">
+                        System Diagnostics • {displayPercent}%
                     </h2>
                     <p className="text-white font-display text-xl md:text-2xl font-bold tracking-widest uppercase drop-shadow-[0_0_15px_rgba(0,243,255,0.8)]">
                         {loadingText}
                     </p>
                 </motion.div>
 
-                {/* Loading Bar */}
+                {/* Dynamic Loading Bar */}
                 <div className="w-64 md:w-80 h-[3px] bg-white/10 relative overflow-hidden mx-auto rounded-full">
                     <motion.div
-                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-accent shadow-[0_0_15px_rgba(0,243,255,1)]"
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-accent shadow-[0_0_15px_rgba(0,243,255,1)] transition-all duration-150"
+                        style={{ width: `${displayPercent}%` }}
                     />
                 </div>
             </div>

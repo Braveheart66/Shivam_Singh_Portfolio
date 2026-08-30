@@ -1,11 +1,7 @@
-import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef, useState } from "react";
-import { ArrowUpRight, Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch, Sparkles } from "lucide-react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import { Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch } from "lucide-react";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 const projects = [
   {
@@ -194,180 +190,167 @@ const projects = [
   },
 ];
 
-const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-
+const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => {
   return (
-    <motion.div
-      ref={cardRef}
-      id={project.id}
-      initial={{ opacity: 0, y: 50, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="relative rounded-3xl bg-card/90 backdrop-blur-xl border border-border/80 p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500 mb-20 last:mb-0 group will-change-transform"
-    >
-      {/* Top Accent Gradient Header */}
-      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${project.gradient}`} />
-
-      {/* Dynamic Ambient Background Glow */}
-      <div
-        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-40"
-        style={{ background: project.accentGlow }}
-      />
-
-      {/* Card Header & Meta */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-border/60 relative z-10">
-        <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="font-mono text-primary font-bold text-sm tracking-widest px-3 py-1 rounded-full bg-primary/10 border border-primary/30 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
-              PROJECT {project.index}
-            </span>
-            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-              {project.category}
-            </span>
-          </div>
-          <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
-            {project.title}
-          </h3>
-          <p className="text-sm sm:text-base text-primary/80 font-mono mt-1">
-            {project.subtitle}
-          </p>
-        </div>
-
-        {/* Action Links */}
-        <div className="flex items-center gap-3 shrink-0">
-          <a
-            href={project.demoLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-xl bg-primary text-black font-semibold text-xs sm:text-sm uppercase tracking-wider hover:bg-white transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(0,243,255,0.25)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
-          >
-            <span>Live Demo</span>
-            <ExternalLink size={15} />
-          </a>
-          <a
-            href={project.githubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2.5 rounded-xl border border-border/80 hover:border-primary/60 text-foreground hover:text-primary transition-all duration-300 flex items-center gap-2 text-xs sm:text-sm font-medium bg-secondary/40 backdrop-blur-sm cursor-pointer"
-          >
-            <Github size={16} />
-            <span className="hidden sm:inline">Source</span>
-          </a>
-        </div>
-      </div>
-
-      {/* Main Content Grid: Overview & Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8 border-b border-border/60 relative z-10">
-        {/* Deep Overview (7 Cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            System Overview & Engineering Architecture
-          </h4>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-            {project.overview}
-          </p>
-
-          {/* Tech Stack Pills */}
-          <div className="pt-4">
-            <h5 className="font-mono text-xs uppercase tracking-widest text-muted-foreground/80 mb-3">
-              Technologies & Infrastructure
-            </h5>
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((t) => (
-                <span
-                  key={t}
-                  className="px-3 py-1 text-xs font-mono font-medium rounded-lg bg-secondary/80 border border-border/60 text-secondary-foreground hover:border-primary/40 hover:text-foreground transition-colors"
-                >
-                  {t}
+    <div id={project.id}>
+      <ContainerScroll
+        titleComponent={
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-2 sm:px-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="font-mono text-primary font-bold text-xs tracking-widest px-3 py-1 rounded-full bg-primary/10 border border-primary/30 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
+                  PROJECT {project.index}
                 </span>
-              ))}
+                <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                  {project.category}
+                </span>
+              </div>
+              <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight hover:text-primary transition-colors duration-300">
+                {project.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-primary/80 font-mono mt-1">
+                {project.subtitle}
+              </p>
+            </div>
+
+            {/* Action Links */}
+            <div className="flex items-center gap-3 shrink-0">
+              <a
+                href={project.demoLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 rounded-xl bg-primary text-black font-semibold text-xs sm:text-sm uppercase tracking-wider hover:bg-white transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(0,243,255,0.25)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
+              >
+                <span>Live Demo</span>
+                <ExternalLink size={15} />
+              </a>
+              <a
+                href={project.githubLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2.5 rounded-xl border border-border/80 hover:border-primary/60 text-foreground hover:text-primary transition-all duration-300 flex items-center gap-2 text-xs sm:text-sm font-medium bg-secondary/40 backdrop-blur-sm cursor-pointer"
+              >
+                <Github size={16} />
+                <span className="hidden sm:inline">Source</span>
+              </a>
+            </div>
+          </div>
+        }
+      >
+        {/* Project Content Inside 3D Container Card */}
+        <div className="flex flex-col gap-6 sm:gap-8 h-full">
+          {/* Main Grid: Overview & Metrics */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 pb-6 border-b border-border/60">
+            {/* Deep Overview (7 Cols) */}
+            <div className="lg:col-span-7 space-y-4">
+              <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                System Overview & Engineering Architecture
+              </h4>
+              <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed">
+                {project.overview}
+              </p>
+
+              {/* Tech Stack Pills */}
+              <div className="pt-2">
+                <h5 className="font-mono text-xs uppercase tracking-widest text-muted-foreground/80 mb-2.5">
+                  Technologies & Infrastructure
+                </h5>
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.map((t) => (
+                    <span
+                      key={t}
+                      className="px-2.5 py-1 text-xs font-mono font-medium rounded-lg bg-secondary/80 border border-border/60 text-secondary-foreground hover:border-primary/40 hover:text-foreground transition-colors"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Key Metrics / Highlights Grid (5 Cols) */}
+            <div className="lg:col-span-5 flex flex-col justify-center">
+              <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                Key Engineering Highlights
+              </h4>
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                {project.metrics.map((m) => (
+                  <div
+                    key={m.label}
+                    className="p-3 sm:p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
+                  >
+                    <span className="text-[10px] sm:text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
+                      {m.label}
+                    </span>
+                    <span className="text-xs sm:text-sm font-semibold text-foreground font-display">
+                      {m.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* System Architecture & Workflow Pipeline */}
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <h4 className="font-mono text-xs sm:text-sm uppercase tracking-widest text-primary flex items-center gap-2">
+                <GitBranch size={16} />
+                System Architecture & Pipeline Workflow
+              </h4>
+              <span className="text-xs text-muted-foreground font-mono">
+                4-Stage Execution Flow (Hover to Inspect)
+              </span>
+            </div>
+
+            {/* 4-Stage Connected Workflow Visualizer with Hover Highlights */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {project.workflow.map((node, stepIdx) => {
+                const Icon = node.icon;
+
+                return (
+                  <motion.div
+                    key={node.step}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
+                    className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_25px_rgba(0,243,255,0.18)]"
+                  >
+                    {/* Step Number Badge */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-xs px-2 py-0.5 rounded border bg-black/50 border-border text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
+                            STEP {node.step}
+                          </span>
+                        </div>
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
+                          <Icon size={15} />
+                        </div>
+                      </div>
+
+                      <h5 className="font-display font-bold text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors mb-1.5">
+                        {node.title}
+                      </h5>
+                      <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+                        {node.desc}
+                      </p>
+                    </div>
+
+                    {/* Progress indicator bar */}
+                    <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-muted-foreground/80">
+                      <span>Stage {stepIdx + 1} of 4</span>
+                      <CheckCircle2 size={12} className="text-primary/70 group-hover:text-primary transition-colors" />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </div>
-
-        {/* Key Metrics / Highlights Grid (5 Cols) */}
-        <div className="lg:col-span-5 flex flex-col justify-center">
-          <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            Key Engineering Highlights
-          </h4>
-          <div className="grid grid-cols-2 gap-3">
-            {project.metrics.map((m) => (
-              <div
-                key={m.label}
-                className="p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
-              >
-                <span className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
-                  {m.label}
-                </span>
-                <span className="text-sm font-semibold text-foreground font-display">
-                  {m.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* System Architecture & Workflow Pipeline */}
-      <div className="pt-8 relative z-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-          <h4 className="font-mono text-xs sm:text-sm uppercase tracking-widest text-primary flex items-center gap-2">
-            <GitBranch size={16} />
-            System Architecture & Pipeline Workflow
-          </h4>
-          <span className="text-xs text-muted-foreground font-mono">
-            4-Stage Execution Flow (Hover to Inspect)
-          </span>
-        </div>
-
-        {/* 4-Stage Connected Workflow Visualizer with Hover Highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
-          {project.workflow.map((node, stepIdx) => {
-            const Icon = node.icon;
-
-            return (
-              <motion.div
-                key={node.step}
-                whileHover={{ y: -6, scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-                className="group p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_30px_rgba(0,243,255,0.18)]"
-              >
-                {/* Step Number Badge */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-xs px-2.5 py-0.5 rounded border bg-black/50 border-border text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
-                        STEP {node.step}
-                      </span>
-                    </div>
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
-                      <Icon size={16} />
-                    </div>
-                  </div>
-
-                  <h5 className="font-display font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors mb-2">
-                    {node.title}
-                  </h5>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {node.desc}
-                  </p>
-                </div>
-
-                {/* Progress indicator bar */}
-                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px] font-mono text-muted-foreground/80">
-                  <span>Stage {stepIdx + 1} of 4</span>
-                  <CheckCircle2 size={13} className="text-primary/70 group-hover:text-primary transition-colors" />
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-    </motion.div>
+      </ContainerScroll>
+    </div>
   );
 };
 
@@ -375,14 +358,6 @@ const ProjectsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inViewRef = useRef(null);
   const inView = useInView(inViewRef, { once: true, margin: "-80px" });
-
-  // Overall Section Scroll Progress Indicator
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end end"],
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
     <section
@@ -399,7 +374,7 @@ const ProjectsSection = () => {
 
       <div className="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 relative">
         {/* Section Header */}
-        <div ref={inViewRef} className="mb-14 sm:mb-20">
+        <div ref={inViewRef} className="mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -420,38 +395,24 @@ const ProjectsSection = () => {
             </p>
           </motion.div>
 
-          {/* Dynamic Scroll-Tracker Progress Bar */}
-          <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            {/* Quick Jump Pill Navigation */}
-            <div className="flex flex-wrap gap-2">
-              {projects.map((p) => (
-                <a
-                  key={p.id}
-                  href={`#${p.id}`}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider bg-secondary/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/40 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(0,243,255,0.15)]"
-                >
-                  {p.index}. {p.title.split("–")[0].split("(")[0]}
-                </a>
-              ))}
-            </div>
-
-            {/* Scroll Indicator */}
-            <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
-              <span className="tracking-widest uppercase text-[10px]">SCROLL TO EXPLORE</span>
-              <div className="w-28 h-1.5 bg-secondary/80 rounded-full overflow-hidden border border-border/50">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-primary to-accent origin-left"
-                  style={{ scaleX: smoothProgress }}
-                />
-              </div>
-            </div>
+          {/* Quick Jump Pill Navigation */}
+          <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border/50">
+            {projects.map((p) => (
+              <a
+                key={p.id}
+                href={`#${p.id}`}
+                className="px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider bg-secondary/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/40 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(0,243,255,0.15)]"
+              >
+                {p.index}. {p.title.split("–")[0].split("(")[0]}
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Spacious Showcase Cards with Parallax Motion */}
-        <div className="space-y-16">
-          {projects.map((project, i) => (
-            <ProjectShowcaseCard key={project.id} project={project} i={i} />
+        {/* 3D Perspective ContainerScroll Projects */}
+        <div className="space-y-4">
+          {projects.map((project) => (
+            <ProjectScrollShowcase key={project.id} project={project} />
           ))}
         </div>
       </div>
