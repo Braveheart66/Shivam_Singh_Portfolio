@@ -5,9 +5,9 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Center, Sparkles, PresentationControls, Stars, Html } from "@react-three/drei";
+import { useGLTF, Center, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
-import { MetalButton, LiquidButton } from "@/components/ui/button";
+import { LiquidButton } from "@/components/ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,25 +43,6 @@ const TitleSparkles = () => (
 );
 
 const roles = ["Software Engineer", "AI & ML Practitioner", "Cloud & Backend Architect", "Generative AI Specialist"];
-
-const Hotspot = ({ onClick, position }: { onClick: () => void, position: [number, number, number] }) => (
-  <Html position={position} center distanceFactor={8} zIndexRange={[200, 0]}>
-    <button
-      type="button"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onClick();
-      }}
-      className="group relative flex items-center justify-center p-2 cursor-pointer select-none"
-      style={{ pointerEvents: 'auto' }}
-    >
-      {/* Outer Glow & Radar Ping */}
-      <div className="absolute w-3.5 h-3.5 rounded-full bg-primary/30 animate-ping pointer-events-none" />
-      <div className="relative w-2 h-2 rounded-full bg-primary border border-white/80 shadow-[0_0_8px_#00f3ff] transition-transform duration-300 group-hover:scale-150 pointer-events-none" />
-    </button>
-  </Html>
-);
 
 function LaserCannons({ pointer }: { pointer: { x: number; y: number } }) {
   const lasersRef = useRef<Array<{ mesh: THREE.Mesh; dir: THREE.Vector3; age: number }>>([]);
@@ -207,35 +188,6 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
 
         {/* Wingtip Laser Cannons */}
         <LaserCannons pointer={globalMouse.current ?? { x: 0, y: 0 }} />
-
-        {/* Dynamic View Hotspots - Visible once spaceship is zoomed in */}
-        {scrollScale > 0.45 && (
-          <group>
-            {currentView === 'front' && (
-              <>
-                <Hotspot position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-              </>
-            )}
-
-            {currentView === 'back' && (
-              <>
-                <Hotspot position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-                <Hotspot position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
-              </>
-            )}
-
-            {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
-              <>
-                <Hotspot position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
-                <Hotspot position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
-              </>
-            )}
-          </group>
-        )}
       </group>
     </group>
   );
@@ -494,22 +446,21 @@ const HeroSection = () => {
 
       {/* 3D Cosmos and Spaceship Canvas */}
       <div
-        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-300 pointer-events-none"
+        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-300 pointer-events-none will-change-transform"
         style={{
           opacity: modelOpacity,
-          display: (modelScaleProgress > 0.02 && modelOpacity > 0.01) ? 'flex' : 'none',
+          visibility: modelOpacity > 0.005 ? 'visible' : 'hidden',
         }}
       >
         <Canvas
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          dpr={[1, 1.25]}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance", precision: "mediump" }}
           camera={{ fov: 45, position: [0, 0, 15] }}
           className="w-full h-full canvas-no-events"
         >
-          <ambientLight intensity={1.5 + (modelScaleProgress * 2)} />
-          <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={2 + (modelScaleProgress * 10)} color="#ffffff" />
-          <spotLight position={[0, 5, 5]} angle={0.35} penumbra={0.8} intensity={modelScaleProgress * 12} color="#00f3ff" />
-          <pointLight position={[-10, -10, -10]} intensity={1 + (modelScaleProgress * 3)} color="#0078ff" />
+          <ambientLight intensity={1.5 + (modelScaleProgress * 1.5)} />
+          <spotLight position={[10, 10, 10]} angle={0.3} penumbra={1} intensity={2 + (modelScaleProgress * 8)} color="#ffffff" />
+          <pointLight position={[-10, -10, -10]} intensity={1 + (modelScaleProgress * 2)} color="#0078ff" />
 
           <group position={[0, isMobile ? 1.8 : 0, 0]}>
             <HeroStarStreaks progress={modelScaleProgress} />
