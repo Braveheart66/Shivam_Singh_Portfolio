@@ -107,7 +107,11 @@ const AboutSection = () => {
                   <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-border group-hover:bg-primary group-hover:shadow-[0_0_10px_rgba(0,243,255,0.8)] transition-all duration-300" />
                   <span className="text-primary font-display font-bold text-sm tracking-widest uppercase block mb-1">{item.year}</span>
                   <h4 className="font-display font-semibold text-xl mb-2 text-foreground group-hover:text-primary transition-colors">{item.title}</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  <MagicText
+                    text={item.desc}
+                    offset={["start 0.98", "start 0.45"]}
+                    className="text-sm text-muted-foreground leading-relaxed"
+                  />
                 </motion.div>
               ))}
             </div>
