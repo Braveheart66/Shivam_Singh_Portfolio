@@ -344,9 +344,11 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                       <h5 className="font-display font-bold text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors mb-1.5">
                         {node.title}
                       </h5>
-                      <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
-                        {node.desc}
-                      </p>
+                      <MagicText
+                        text={node.desc}
+                        offset={["start 0.98", "start 0.45"]}
+                        className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed"
+                      />
                     </div>
 
                     {/* Progress indicator bar */}

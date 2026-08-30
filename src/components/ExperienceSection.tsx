@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Trophy, Award, Cloud, ShieldCheck } from "lucide-react";
+import { MagicText } from "@/components/ui/magic-text";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -54,7 +55,11 @@ const ExperienceCard = ({ item, i }: { item: typeof achievements[0]; i: number }
           </div>
           <h3 className="font-display font-bold text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
         </div>
-        <p className="text-muted-foreground text-sm md:text-base leading-relaxed">{item.desc}</p>
+        <MagicText
+          text={item.desc}
+          offset={["start 0.98", "start 0.45"]}
+          className="text-muted-foreground text-sm md:text-base leading-relaxed"
+        />
       </div>
     </motion.div>
   );

@@ -7,6 +7,7 @@ export interface MagicTextProps {
   text: string;
   className?: string;
   wordClassName?: string;
+  offset?: any;
 }
 
 interface WordProps {
@@ -20,19 +21,24 @@ const Word: React.FC<WordProps> = ({ children, progress, range, className }) => 
   const opacity = useTransform(progress, range, [0, 1]);
 
   return (
-    <span className={cn("relative inline-block mr-1.5 leading-relaxed", className)}>
+    <span className={cn("relative inline-block mr-1 leading-relaxed", className)}>
       <span className="absolute opacity-20 select-none">{children}</span>
       <motion.span style={{ opacity }}>{children}</motion.span>
     </span>
   );
 };
 
-export const MagicText: React.FC<MagicTextProps> = ({ text, className, wordClassName }) => {
+export const MagicText: React.FC<MagicTextProps> = ({
+  text,
+  className,
+  wordClassName,
+  offset = ["start 0.95", "start 0.45"],
+}) => {
   const container = useRef<HTMLParagraphElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: container,
-    offset: ["start 0.95", "start 0.45"],
+    offset,
   });
 
   const words = text.split(" ");
