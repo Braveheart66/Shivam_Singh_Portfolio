@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { LiquidButton } from "@/components/ui/button";
+import { MagicText } from "@/components/ui/magic-text";
 
 const projects = [
   {
@@ -256,9 +257,10 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 System Overview & Engineering Architecture
               </h4>
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed">
-                {project.overview}
-              </p>
+              <MagicText
+                text={project.overview}
+                className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed"
+              />
 
               {/* Tech Stack Pills */}
               <div className="pt-2">
@@ -399,9 +401,10 @@ const ProjectsSection = () => {
                 Selected <span className="text-primary">Engineering</span> Work
               </h2>
             </div>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-lg font-sans font-light">
-              High-throughput architectures, privacy-first local RAG systems, and production edge ML models built for scale and verifiable accuracy.
-            </p>
+            <MagicText
+              text="High-throughput architectures, privacy-first local RAG systems, and production edge ML models built for scale and verifiable accuracy."
+              className="text-muted-foreground text-sm sm:text-base max-w-lg font-sans font-light"
+            />
           </motion.div>
 
           {/* Quick Jump Pill Navigation */}

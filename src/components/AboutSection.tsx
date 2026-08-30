@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Sparkles, Brain, Palette, Code } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
 import InteractiveModel from "./ui/InteractiveModel";
+import { MagicText } from "./ui/magic-text";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -79,10 +80,10 @@ const AboutSection = () => {
                 Scalable<br />
                 <span className="text-primary">Engineering</span>
               </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed max-w-md font-sans font-light">
-                I'm Shivam Singh — a software engineer and AI practitioner specializing in scalable backend architectures, cloud-native pipelines, and Generative AI systems.
-                I focus on architecting resilient, high-throughput systems, event-driven serverless backends, and privacy-first local LLM workflows with precision and performance.
-              </p>
+              <MagicText
+                text="I'm Shivam Singh — a software engineer and AI practitioner specializing in scalable backend architectures, cloud-native pipelines, and Generative AI systems. I focus on architecting resilient, high-throughput systems, event-driven serverless backends, and privacy-first local LLM workflows with precision and performance."
+                className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed max-w-md font-sans font-light"
+              />
             </motion.div>
           </div>
         </div>
