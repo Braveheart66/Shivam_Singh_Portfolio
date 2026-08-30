@@ -2,6 +2,7 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { Send, Github, Linkedin, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { MetalButton } from "@/components/ui/button";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -135,21 +136,23 @@ const ContactSection = () => {
               placeholder="Tell me about your project..."
             />
           </motion.div>
-          <motion.button
-            type="submit"
-            disabled={sending}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full md:w-auto px-8 py-3 rounded-lg font-medium text-primary-foreground bg-gradient-to-r from-primary to-accent hover:shadow-[0_0_30px_hsl(199,89%,48%,0.3)] transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {sending ? (
-              <span className="animate-pulse">Sending Message...</span>
-            ) : (
-              <>
-                <Send size={16} /> Send Message
-              </>
-            )}
-          </motion.button>
+          <div className="pt-2">
+            <MetalButton
+              type="submit"
+              disabled={sending}
+              variant="primary"
+              className="w-full md:w-auto h-12 px-8 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2"
+            >
+              {sending ? (
+                <span className="animate-pulse">Transmitting Data...</span>
+              ) : (
+                <>
+                  <Send size={15} />
+                  <span>Send Message</span>
+                </>
+              )}
+            </MetalButton>
+          </div>
         </motion.form>
 
         {/* Social links */}

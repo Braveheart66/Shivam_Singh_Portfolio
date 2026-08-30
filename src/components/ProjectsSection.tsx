@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { MetalButton } from "@/components/ui/button";
 
 const projects = [
   {
@@ -219,19 +220,27 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                 href={project.demoLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl bg-primary text-black font-semibold text-xs sm:text-sm uppercase tracking-wider hover:bg-white transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(0,243,255,0.25)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
               >
-                <span>Live Demo</span>
-                <ExternalLink size={15} />
+                <MetalButton
+                  variant="primary"
+                  className="px-4 sm:px-5 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2"
+                >
+                  <span>Live Demo</span>
+                  <ExternalLink size={14} />
+                </MetalButton>
               </a>
               <a
                 href={project.githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl border border-border/80 hover:border-primary/60 text-foreground hover:text-primary transition-all duration-300 flex items-center gap-2 text-xs sm:text-sm font-medium bg-secondary/40 backdrop-blur-sm cursor-pointer"
               >
-                <Github size={16} />
-                <span className="hidden sm:inline">Source</span>
+                <MetalButton
+                  variant="default"
+                  className="px-4 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2"
+                >
+                  <Github size={15} />
+                  <span className="hidden sm:inline">Source</span>
+                </MetalButton>
               </a>
             </div>
           </div>

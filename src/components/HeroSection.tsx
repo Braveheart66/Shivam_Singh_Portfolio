@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Center, Sparkles, PresentationControls, Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
+import { MetalButton } from "@/components/ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -550,11 +551,27 @@ const HeroSection = () => {
             </div>
           </div>
 
-          <div ref={buttonsRef} className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            <button onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })} className="h-fit w-full lg:w-auto px-8 py-4 bg-primary text-black font-semibold text-sm uppercase tracking-wider hover:bg-white transition-colors duration-300 pointer-events-auto">View Projects</button>
-            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-              <a href="/Shivam_Resume.pdf" download="Shivam_Resume.pdf" className="flex-1 lg:flex-none px-4 lg:px-8 py-4 border border-border text-foreground font-medium text-sm hover:border-primary hover:text-primary transition-colors duration-300 flex items-center justify-center gap-2 cursor-pointer pointer-events-auto"><Download size={16} /> Resume</a>
-              <a href="mailto:shivamsinghraghuvanshi1234@gmail.com" className="flex-1 lg:flex-none px-4 lg:px-8 py-4 border border-border text-foreground font-medium text-sm hover:border-primary hover:text-primary transition-colors duration-300 flex items-center justify-center gap-2 cursor-pointer pointer-events-auto"><Send size={16} /> Contact</a>
+          <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto pointer-events-auto">
+            <MetalButton
+              variant="primary"
+              onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+              className="w-full sm:w-auto h-11 px-6 font-mono text-xs uppercase tracking-wider font-bold"
+            >
+              <span>Explore Projects</span>
+            </MetalButton>
+            <div className="flex flex-row gap-3 w-full sm:w-auto">
+              <a href="/Shivam_Resume.pdf" download="Shivam_Resume.pdf" className="flex-1 sm:flex-none">
+                <MetalButton variant="default" className="w-full h-11 px-5 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                  <Download size={14} />
+                  <span>Resume</span>
+                </MetalButton>
+              </a>
+              <a href="mailto:shivamsinghraghuvanshi1234@gmail.com" className="flex-1 sm:flex-none">
+                <MetalButton variant="default" className="w-full h-11 px-5 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                  <Send size={14} />
+                  <span>Contact</span>
+                </MetalButton>
+              </a>
             </div>
           </div>
         </div>
