@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Center, Sparkles, PresentationControls, Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
-import { MetalButton } from "@/components/ui/button";
+import { MetalButton, LiquidButton } from "@/components/ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -464,8 +464,8 @@ const HeroSection = () => {
 
       {/* Sci-Fi Camera Viewpoint Switcher HUD */}
       {modelScaleProgress > 0.45 && !heroScrolledPast && modelOpacity > 0.2 && (
-        <div className="absolute top-[12vh] md:top-[16vh] left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-1.5 md:gap-3 bg-black/85 backdrop-blur-xl px-3 py-1.5 md:px-5 md:py-2.5 rounded-full border border-primary/40 shadow-[0_0_30px_rgba(0,243,255,0.3)] pointer-events-auto transition-all duration-300">
-          <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-primary/80 mr-1 hidden sm:inline">VIEWPOINT:</span>
+        <div className="absolute top-[12vh] md:top-[16vh] left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-2 bg-black/60 backdrop-blur-2xl p-2 rounded-full border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] pointer-events-auto transition-all duration-300">
+          <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-white/70 px-2 hidden sm:inline">VIEWPOINT:</span>
           {[
             { id: 'front', label: 'Cockpit' },
             { id: 'left', label: 'Left Wing' },
@@ -473,22 +473,21 @@ const HeroSection = () => {
             { id: 'top', label: 'Top View' },
             { id: 'back', label: 'Rear Engine' },
           ].map((v) => (
-            <button
+            <LiquidButton
               key={v.id}
               type="button"
+              variant={activeView === v.id ? "cyan" : "default"}
+              size="sm"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setActiveView(v.id);
               }}
-              className={`px-2.5 py-1 md:px-3.5 md:py-1.5 text-xs font-mono uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${activeView === v.id
-                ? 'bg-primary text-black font-bold shadow-[0_0_15px_#00f3ff]'
-                : 'text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/30'
-                }`}
+              className="text-xs font-mono uppercase tracking-wider py-1 px-3.5 h-8 flex items-center gap-1.5"
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${activeView === v.id ? 'bg-black animate-ping' : 'bg-primary/50'}`} />
-              {v.label}
-            </button>
+              <span className={`w-1.5 h-1.5 rounded-full ${activeView === v.id ? 'bg-primary animate-ping' : 'bg-white/40'}`} />
+              <span>{v.label}</span>
+            </LiquidButton>
           ))}
         </div>
       )}
