@@ -135,7 +135,13 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
 
   useEffect(() => {
     const handleResize = () => {
-      setScale(window.innerWidth < 768 ? [2.0, 2.0, 2.0] : [5.5, 5.5, 5.5]);
+      if (window.innerWidth < 480) {
+        setScale([2.8, 2.8, 2.8]);
+      } else if (window.innerWidth < 768) {
+        setScale([3.6, 3.6, 3.6]);
+      } else {
+        setScale([5.5, 5.5, 5.5]);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -284,15 +290,30 @@ const HeroSection = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Global mouse tracker — works even when pointer is over text overlays
+  // Global mouse & touch tracker — works on desktop mouse and mobile touch
   useEffect(() => {
     const handleGlobalMouse = (e: MouseEvent) => {
       // Normalize to -1..1 range like R3F's state.pointer
       globalMouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       globalMouseRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
     };
+
+    const handleGlobalTouch = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        globalMouseRef.current.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        globalMouseRef.current.y = -((touch.clientY / window.innerHeight) * 2 - 1);
+      }
+    };
+
     window.addEventListener('mousemove', handleGlobalMouse, { passive: true });
-    return () => window.removeEventListener('mousemove', handleGlobalMouse);
+    window.addEventListener('touchmove', handleGlobalTouch, { passive: true });
+    window.addEventListener('touchstart', handleGlobalTouch, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouse);
+      window.removeEventListener('touchmove', handleGlobalTouch);
+      window.removeEventListener('touchstart', handleGlobalTouch);
+    };
   }, []);
 
   const viewRotations: Record<string, [number, number, number]> = {
@@ -416,14 +437,14 @@ const HeroSection = () => {
 
       {/* Sci-Fi Camera Viewpoint Switcher HUD */}
       {modelScaleProgress > 0.45 && !heroScrolledPast && modelOpacity > 0.2 && (
-        <div className="absolute top-[12vh] md:top-[16vh] left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-2 bg-black/60 backdrop-blur-2xl p-2 rounded-full border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] pointer-events-auto transition-all duration-300">
-          <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-white/70 px-2 hidden sm:inline">VIEWPOINT:</span>
+        <div className="absolute top-[10vh] sm:top-[12vh] md:top-[16vh] left-1/2 -translate-x-1/2 z-30 flex items-center justify-center gap-1 sm:gap-2 bg-black/70 backdrop-blur-2xl px-2 py-1.5 sm:px-3 sm:py-2 rounded-full border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] pointer-events-auto transition-all duration-300 max-w-[95vw] overflow-x-auto">
+          <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-white/70 px-1.5 hidden md:inline">VIEWPOINT:</span>
           {[
-            { id: 'front', label: 'Cockpit' },
-            { id: 'left', label: 'Left Wing' },
-            { id: 'right', label: 'Right Wing' },
-            { id: 'top', label: 'Top View' },
-            { id: 'back', label: 'Rear Engine' },
+            { id: 'front', label: 'Cockpit', short: 'Cockpit' },
+            { id: 'left', label: 'Left Wing', short: 'L-Wing' },
+            { id: 'right', label: 'Right Wing', short: 'R-Wing' },
+            { id: 'top', label: 'Top View', short: 'Top' },
+            { id: 'back', label: 'Rear Engine', short: 'Engine' },
           ].map((v) => (
             <LiquidButton
               key={v.id}
@@ -435,10 +456,11 @@ const HeroSection = () => {
                 e.stopPropagation();
                 setActiveView(v.id);
               }}
-              className="text-xs font-mono uppercase tracking-wider py-1 px-3.5 h-8 flex items-center gap-1.5"
+              className="text-[10px] sm:text-xs font-mono uppercase tracking-wider py-1 px-2.5 sm:px-3.5 h-7 sm:h-8 flex items-center gap-1 shrink-0"
             >
               <span className={`w-1.5 h-1.5 rounded-full ${activeView === v.id ? 'bg-primary animate-ping' : 'bg-white/40'}`} />
-              <span>{v.label}</span>
+              <span className="sm:hidden">{v.short}</span>
+              <span className="hidden sm:inline">{v.label}</span>
             </LiquidButton>
           ))}
         </div>
@@ -455,18 +477,18 @@ const HeroSection = () => {
         <Canvas
           dpr={[1, 1.25]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance", precision: "mediump" }}
-          camera={{ fov: 45, position: [0, 0, 15] }}
+          camera={{ fov: isMobile ? 48 : 45, position: [0, 0, isMobile ? 16 : 15] }}
           className="w-full h-full canvas-no-events"
         >
           <ambientLight intensity={1.5 + (modelScaleProgress * 1.5)} />
           <spotLight position={[10, 10, 10]} angle={0.3} penumbra={1} intensity={2 + (modelScaleProgress * 8)} color="#ffffff" />
           <pointLight position={[-10, -10, -10]} intensity={1 + (modelScaleProgress * 2)} color="#0078ff" />
 
-          <group position={[0, isMobile ? 1.8 : 0, 0]}>
+          <group position={[0, isMobile ? 0.35 : 0, 0]}>
             <HeroStarStreaks progress={modelScaleProgress} />
           </group>
 
-          <group position={[0, isMobile ? 1.8 : 0, 0]}>
+          <group position={[0, isMobile ? 0.35 : 0, 0]}>
             <StarfighterModel
               isFixed={isModelFixed}
               scrollScale={modelScaleProgress}
