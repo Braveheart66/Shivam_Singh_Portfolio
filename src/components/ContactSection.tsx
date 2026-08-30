@@ -1,8 +1,9 @@
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import { Send, Github, Linkedin, Mail } from "lucide-react";
+import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { MetalButton } from "@/components/ui/button";
+import { GradientSocialMenu } from "./Footer";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -155,34 +156,14 @@ const ContactSection = () => {
           </div>
         </motion.form>
 
-        {/* Social links */}
+        {/* Expanding Gradient Social Menu */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.5 }}
-          className="flex justify-center gap-6 mt-10"
+          className="mt-10"
         >
-          {[
-            { icon: Github, href: "https://github.com/Braveheart66", label: "GitHub" },
-            { icon: Linkedin, href: "https://linkedin.com/in/shivam-singh-93ab0b2a7", label: "LinkedIn" },
-            { icon: Mail, href: "mailto:shivamsinghraghuvanshi1234@gmail.com", label: "Email" },
-          ].map((social, i) => (
-            <motion.a
-              key={social.label}
-              href={social.href}
-              aria-label={social.label}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ y: -4, scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.7 + i * 0.1, duration: 0.4 }}
-              className="w-12 h-12 rounded-xl glass flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 hover:neon-glow transition-all duration-300"
-            >
-              <social.icon size={20} />
-            </motion.a>
-          ))}
+          <GradientSocialMenu />
         </motion.div>
         </div>
       </div>
