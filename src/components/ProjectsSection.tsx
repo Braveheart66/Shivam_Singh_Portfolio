@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
-import { MetalButton } from "@/components/ui/button";
+import { LiquidButton } from "@/components/ui/button";
 
 const projects = [
   {
@@ -221,26 +221,26 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MetalButton
-                  variant="primary"
-                  className="px-4 sm:px-5 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2"
+                <LiquidButton
+                  size="default"
+                  className="px-5 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2 text-white hover:text-primary"
                 >
                   <span>Live Demo</span>
                   <ExternalLink size={14} />
-                </MetalButton>
+                </LiquidButton>
               </a>
               <a
                 href={project.githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MetalButton
-                  variant="default"
-                  className="px-4 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2"
+                <LiquidButton
+                  size="default"
+                  className="px-4 py-2 h-10 text-xs sm:text-sm uppercase tracking-wider font-semibold flex items-center gap-2 text-white/90 hover:text-white"
                 >
                   <Github size={15} />
                   <span className="hidden sm:inline">Source</span>
-                </MetalButton>
+                </LiquidButton>
               </a>
             </div>
           </div>

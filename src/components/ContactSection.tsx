@@ -2,7 +2,7 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
-import { MetalButton } from "@/components/ui/button";
+import { LiquidButton } from "@/components/ui/button";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -137,11 +137,11 @@ const ContactSection = () => {
             />
           </motion.div>
           <div className="pt-2">
-            <MetalButton
+            <LiquidButton
               type="submit"
               disabled={sending}
-              variant="primary"
-              className="w-full md:w-auto h-12 px-8 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2"
+              size="lg"
+              className="w-full md:w-auto px-8 py-3.5 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2 text-white hover:text-primary"
             >
               {sending ? (
                 <span className="animate-pulse">Transmitting Data...</span>
@@ -151,7 +151,7 @@ const ContactSection = () => {
                   <span>Send Message</span>
                 </>
               )}
-            </MetalButton>
+            </LiquidButton>
           </div>
         </motion.form>
         </div>

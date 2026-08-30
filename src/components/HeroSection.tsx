@@ -551,25 +551,26 @@ const HeroSection = () => {
           </div>
 
           <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto pointer-events-auto">
-            <MetalButton
-              variant="primary"
+            <LiquidButton
+              variant="default"
+              size="lg"
               onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
-              className="w-full sm:w-auto h-11 px-6 font-mono text-xs uppercase tracking-wider font-bold"
+              className="w-full sm:w-auto px-7 py-3 font-mono text-xs uppercase tracking-wider font-bold text-white hover:text-primary"
             >
               <span>Explore Projects</span>
-            </MetalButton>
+            </LiquidButton>
             <div className="flex flex-row gap-3 w-full sm:w-auto">
               <a href="/Shivam_Resume.pdf" download="Shivam_Resume.pdf" className="flex-1 sm:flex-none">
-                <MetalButton variant="default" className="w-full h-11 px-5 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                <LiquidButton size="lg" className="w-full px-5 py-3 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 text-white hover:text-primary">
                   <Download size={14} />
                   <span>Resume</span>
-                </MetalButton>
+                </LiquidButton>
               </a>
               <a href="mailto:shivamsinghraghuvanshi1234@gmail.com" className="flex-1 sm:flex-none">
-                <MetalButton variant="default" className="w-full h-11 px-5 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                <LiquidButton size="lg" className="w-full px-5 py-3 font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 text-white hover:text-primary">
                   <Send size={14} />
                   <span>Contact</span>
-                </MetalButton>
+                </LiquidButton>
               </a>
             </div>
           </div>
