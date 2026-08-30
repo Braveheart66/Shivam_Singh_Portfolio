@@ -1,6 +1,6 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef, useState } from "react";
-import { ArrowUpRight, Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch } from "lucide-react";
+import { ArrowUpRight, Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap, CheckCircle2, GitBranch, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -49,7 +49,8 @@ const projects = [
       { label: "Safety Policy", value: "3-Tier Confidence Routing" },
     ],
     tech: ["AWS CDK", "Lambda", "Amazon Rekognition", "SageMaker A2I", "DynamoDB", "Streamlit", "EventBridge", "S3"],
-    gradient: "from-primary/20 via-primary/5 to-transparent",
+    gradient: "from-primary/30 via-primary/10 to-transparent",
+    accentGlow: "rgba(0, 243, 255, 0.25)",
     demoLink: "https://hitl-content-moderation.vercel.app/",
     githubLink: "https://github.com/Braveheart66",
   },
@@ -94,7 +95,8 @@ const projects = [
       { label: "Citations", value: "100% Grounded Line References" },
     ],
     tech: ["React + Vite", "Django REST", "Qdrant", "Ollama (Qwen2.5)", "PostgreSQL", "Docker", "FastEmbed", "TailwindCSS"],
-    gradient: "from-accent/20 via-accent/5 to-transparent",
+    gradient: "from-accent/30 via-accent/10 to-transparent",
+    accentGlow: "rgba(0, 120, 255, 0.25)",
     demoLink: "https://noty-brain.vercel.app/",
     githubLink: "https://github.com/Braveheart66",
   },
@@ -139,7 +141,8 @@ const projects = [
       { label: "Reporting", value: "Automated Geospatial Alerting" },
     ],
     tech: ["Python", "Computer Vision", "NDVI Modeling", "OpenCV", "Geospatial", "Deep Learning", "Streamlit", "NumPy"],
-    gradient: "from-primary/20 via-primary/5 to-transparent",
+    gradient: "from-primary/30 via-primary/10 to-transparent",
+    accentGlow: "rgba(0, 243, 255, 0.25)",
     demoLink: "https://satellite-deforestation-monitoring.vercel.app/",
     githubLink: "https://github.com/Braveheart66",
   },
@@ -184,7 +187,8 @@ const projects = [
       { label: "Stream Processing", value: "60 FPS Real-time CV" },
     ],
     tech: ["PyTorch", "BiLSTM-GRU", "OpenCV", "ONNX Runtime", "Streamlit", "Docker", "Explainable AI (XAI)", "NumPy"],
-    gradient: "from-accent/20 via-accent/5 to-transparent",
+    gradient: "from-accent/30 via-accent/10 to-transparent",
+    accentGlow: "rgba(0, 120, 255, 0.25)",
     demoLink: "https://driverfatiguedrift-hpu2fcp8xe9lmxbqjx2appk.streamlit.app/",
     githubLink: "https://github.com/Braveheart66",
   },
@@ -192,36 +196,52 @@ const projects = [
 
 const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(cardRef, { once: true, margin: "-60px" });
   const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
+
+  // Scroll-driven Parallax Animation for each Project Card
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
+
+  const scale = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.93, 1, 1, 0.96]);
+  const opacity = useTransform(smoothProgress, [0, 0.15, 0.85, 1], [0.4, 1, 1, 0.6]);
+  const y = useTransform(smoothProgress, [0, 1], ["40px", "-40px"]);
 
   return (
     <motion.div
       ref={cardRef}
       id={project.id}
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="relative rounded-3xl bg-card/90 backdrop-blur-xl border border-border/80 p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500 mb-16 last:mb-0"
+      style={{
+        scale,
+        opacity,
+        y,
+      }}
+      className="relative rounded-3xl bg-card/90 backdrop-blur-xl border border-border/80 p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500 mb-20 last:mb-0 group"
     >
       {/* Top Accent Gradient Header */}
       <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${project.gradient}`} />
 
-      {/* Subtle Background Glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
+      {/* Dynamic Ambient Background Glow */}
+      <div
+        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-40"
+        style={{ background: project.accentGlow }}
+      />
 
       {/* Card Header & Meta */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-border/60">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-border/60 relative z-10">
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <span className="font-mono text-primary font-bold text-sm tracking-widest px-3 py-1 rounded-full bg-primary/10 border border-primary/30">
+            <span className="font-mono text-primary font-bold text-sm tracking-widest px-3 py-1 rounded-full bg-primary/10 border border-primary/30 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
               PROJECT {project.index}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
               {project.category}
             </span>
           </div>
-          <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+          <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
             {project.title}
           </h3>
           <p className="text-sm sm:text-base text-primary/80 font-mono mt-1">
@@ -253,7 +273,7 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
       </div>
 
       {/* Main Content Grid: Overview & Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8 border-b border-border/60">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8 border-b border-border/60 relative z-10">
         {/* Deep Overview (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
           <h4 className="font-mono text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -307,30 +327,31 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
       </div>
 
       {/* System Architecture & Workflow Pipeline */}
-      <div className="pt-8">
+      <div className="pt-8 relative z-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <h4 className="font-mono text-xs sm:text-sm uppercase tracking-widest text-primary flex items-center gap-2">
             <GitBranch size={16} />
             System Architecture & Pipeline Workflow
           </h4>
           <span className="text-xs text-muted-foreground font-mono">
-            4-Stage Execution Flow
+            4-Stage Execution Flow (Click to Inspect)
           </span>
         </div>
 
-        {/* 4-Stage Connected Workflow Visualizer */}
+        {/* 4-Stage Connected Workflow Visualizer with Interactive Stagger */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
           {project.workflow.map((node, stepIdx) => {
             const Icon = node.icon;
             const isSelected = activeWorkflowStep === stepIdx;
 
             return (
-              <div
+              <motion.div
                 key={node.step}
+                whileHover={{ y: -4, scale: 1.02 }}
                 onClick={() => setActiveWorkflowStep(stepIdx)}
                 className={`group p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative ${
                   isSelected
-                    ? "bg-primary/10 border-primary shadow-[0_0_20px_rgba(0,243,255,0.15)]"
+                    ? "bg-primary/10 border-primary shadow-[0_0_25px_rgba(0,243,255,0.2)]"
                     : "bg-secondary/30 border-border/60 hover:border-primary/40 hover:bg-secondary/50"
                 }`}
               >
@@ -338,7 +359,9 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-xs px-2 py-0.5 rounded bg-black/50 border border-border text-primary">
+                      <span className={`font-mono font-bold text-xs px-2.5 py-0.5 rounded border transition-colors ${
+                        isSelected ? "bg-primary text-black border-primary font-black" : "bg-black/50 border-border text-primary"
+                      }`}>
                         STEP {node.step}
                       </span>
                     </div>
@@ -358,9 +381,9 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
                 {/* Progress indicator bar */}
                 <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px] font-mono text-muted-foreground/80">
                   <span>Stage {stepIdx + 1} of 4</span>
-                  <CheckCircle2 size={13} className="text-primary/70" />
+                  <CheckCircle2 size={13} className={isSelected ? "text-primary" : "text-primary/70"} />
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -374,13 +397,24 @@ const ProjectsSection = () => {
   const inViewRef = useRef(null);
   const inView = useInView(inViewRef, { once: true, margin: "-80px" });
 
+  // Overall Section Scroll Progress Indicator
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end end"],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
   return (
     <section
       id="projects"
       className="border-b border-border bg-background/80 backdrop-blur-[1px] relative z-10 overflow-hidden py-16 sm:py-24"
       ref={containerRef}
     >
-      {/* Background ambient lighting */}
+      {/* Dynamic Background Grid Animation */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293d0a_1px,transparent_1px),linear-gradient(to_bottom,#1f293d0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
+
+      {/* Ambient background lighting */}
       <div className="absolute -right-40 top-1/4 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[160px] pointer-events-none" />
       <div className="absolute -left-40 bottom-1/4 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[160px] pointer-events-none" />
 
@@ -407,22 +441,36 @@ const ProjectsSection = () => {
             </p>
           </motion.div>
 
-          {/* Quick Jump Pill Navigation */}
-          <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border/50">
-            {projects.map((p) => (
-              <a
-                key={p.id}
-                href={`#${p.id}`}
-                className="px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider bg-secondary/50 hover:bg-primary/15 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/40 transition-all duration-200"
-              >
-                {p.index}. {p.title.split("–")[0].split("(")[0]}
-              </a>
-            ))}
+          {/* Dynamic Scroll-Tracker Progress Bar */}
+          <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Quick Jump Pill Navigation */}
+            <div className="flex flex-wrap gap-2">
+              {projects.map((p) => (
+                <a
+                  key={p.id}
+                  href={`#${p.id}`}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider bg-secondary/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/40 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(0,243,255,0.15)]"
+                >
+                  {p.index}. {p.title.split("–")[0].split("(")[0]}
+                </a>
+              ))}
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
+              <span className="tracking-widest uppercase text-[10px]">SCROLL TO EXPLORE</span>
+              <div className="w-28 h-1.5 bg-secondary/80 rounded-full overflow-hidden border border-border/50">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-primary to-accent origin-left"
+                  style={{ scaleX: smoothProgress }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Spacious Showcase Cards */}
-        <div className="space-y-12">
+        {/* Spacious Showcase Cards with Parallax Motion */}
+        <div className="space-y-16">
           {projects.map((project, i) => (
             <ProjectShowcaseCard key={project.id} project={project} i={i} />
           ))}
