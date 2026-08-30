@@ -47,7 +47,7 @@ const skillCategories = [
   },
 ];
 
-const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: number; inView: boolean }) => {
+const SkillCard = ({ cat, i }: { cat: typeof skillCategories[0]; i: number }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -77,8 +77,9 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: 0.08 * i, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -89,7 +90,7 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
         transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
         transformStyle: 'preserve-3d',
       }}
-      className="bg-card/90 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_35px_rgba(0,243,255,0.18)] cursor-pointer select-none"
+      className="bg-card/90 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_35px_rgba(0,243,255,0.18)] cursor-pointer select-none will-change-transform"
     >
       {/* Top glowing accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} />
@@ -131,26 +132,14 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
 };
 
 const SkillsSection = () => {
-  const ref = useRef(null);
-  const sectionRef = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ["40px", "-40px"]);
-
   return (
-    <section id="skills" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative z-10 overflow-hidden" ref={sectionRef}>
-      <motion.div
-        style={{ y: useTransform(scrollYProgress, [0, 1], ["60px", "-60px"]) }}
-        className="absolute -left-40 top-1/2 w-[400px] h-[400px] rounded-full bg-accent/5 blur-[130px] pointer-events-none"
-      />
-
-      <div className="max-w-[90rem] mx-auto border-x border-border p-8 md:p-16 lg:p-20 relative" ref={ref}>
+    <section id="skills" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative z-10 overflow-hidden py-16 sm:py-24">
+      <div className="max-w-[90rem] mx-auto border-x border-border p-8 md:p-16 lg:p-20 relative">
         <motion.div
-          style={{ y: parallaxY }}
           initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14"
         >
           <p className="text-primary font-medium tracking-widest uppercase text-xs mb-3">Skills & Stack</p>
@@ -161,7 +150,7 @@ const SkillsSection = () => {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: '1000px' }}>
           {skillCategories.map((cat, i) => (
-            <SkillCard key={cat.title} cat={cat} i={i} inView={inView} />
+            <SkillCard key={cat.title} cat={cat} i={i} />
           ))}
         </div>
       </div>

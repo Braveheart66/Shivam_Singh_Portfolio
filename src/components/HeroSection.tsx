@@ -10,6 +10,9 @@ import * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Preload 3D asset immediately at module load
+useGLTF.preload("/star_wars_ship.glb");
+
 const TitleSparkles = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden">
     {[...Array(12)].map((_, i) => (
