@@ -70,16 +70,11 @@
     font-family: 'Inter', sans-serif;
   }
 
-  /* Hide default cursor on devices with a mouse, since we use CustomCursor */
+  /* Hide default OS cursor globally on mouse devices so ONLY the custom spacecraft cursor is visible */
   @media (pointer: fine) {
-
-    body,
-    a,
-    button,
-    input,
-    select,
-    textarea,
-    canvas {
+    *,
+    *::before,
+    *::after {
       cursor: none !important;
     }
   }
