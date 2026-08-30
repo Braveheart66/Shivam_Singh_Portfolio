@@ -40,7 +40,7 @@ const TitleSparkles = () => (
 
 const roles = ["Software Engineer", "AI & ML Practitioner", "Cloud & Backend Architect", "Generative AI Specialist"];
 
-const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => void, position: [number, number, number] }) => (
+const Hotspot = ({ onClick, position }: { onClick: () => void, position: [number, number, number] }) => (
   <Html position={position} center distanceFactor={8} zIndexRange={[200, 0]}>
     <button
       type="button"
@@ -49,19 +49,12 @@ const Hotspot = ({ label, onClick, position }: { label: string, onClick: () => v
         e.stopPropagation();
         onClick();
       }}
-      className="group relative flex flex-col items-center justify-center p-3 cursor-pointer select-none"
+      className="group relative flex items-center justify-center p-2 cursor-pointer select-none"
       style={{ pointerEvents: 'auto' }}
     >
       {/* Outer Glow & Radar Ping */}
-      <div className="absolute w-6 h-6 rounded-full bg-primary/30 animate-ping pointer-events-none" />
-      <div className="relative w-3.5 h-3.5 rounded-full bg-primary border-2 border-white shadow-[0_0_15px_#00f3ff] transition-transform duration-300 group-hover:scale-125 pointer-events-none" />
-
-      {/* Label HUD */}
-      <div className="mt-2 px-2.5 py-1 bg-black/90 backdrop-blur-md rounded-md border border-primary/50 shadow-[0_0_10px_rgba(0,243,255,0.4)] pointer-events-none transition-all duration-300 group-hover:border-primary">
-        <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-white group-hover:text-primary transition-colors whitespace-nowrap">
-          {label}
-        </span>
-      </div>
+      <div className="absolute w-3.5 h-3.5 rounded-full bg-primary/30 animate-ping pointer-events-none" />
+      <div className="relative w-2 h-2 rounded-full bg-primary border border-white/80 shadow-[0_0_8px_#00f3ff] transition-transform duration-300 group-hover:scale-150 pointer-events-none" />
     </button>
   </Html>
 );
@@ -216,25 +209,25 @@ function StarfighterModel({ isFixed, scrollScale = 0, targetBaseRotation = [0, 0
           <group>
             {currentView === 'front' && (
               <>
-                <Hotspot label="Left Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Right Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+                <Hotspot position={[-0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot position={[0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
               </>
             )}
 
             {currentView === 'back' && (
               <>
-                <Hotspot label="Right Wing" position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
-                <Hotspot label="Left Wing" position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
-                <Hotspot label="Top View" position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
-                <Hotspot label="Cockpit" position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
+                <Hotspot position={[-0.64, 0, 0]} onClick={() => onViewChange?.('right')} />
+                <Hotspot position={[0.64, 0, 0]} onClick={() => onViewChange?.('left')} />
+                <Hotspot position={[0, 0.33, 0]} onClick={() => onViewChange?.('top')} />
+                <Hotspot position={[0, 0.09, 0.73]} onClick={() => onViewChange?.('front')} />
               </>
             )}
 
             {(currentView === 'left' || currentView === 'right' || currentView === 'top') && (
               <>
-                <Hotspot label="Cockpit" position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
-                <Hotspot label="Rear Engine" position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
+                <Hotspot position={[0, 0.09, 0.64]} onClick={() => onViewChange?.('front')} />
+                <Hotspot position={[0, 0.18, -0.73]} onClick={() => onViewChange?.('back')} />
               </>
             )}
           </group>

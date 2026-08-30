@@ -1,13 +1,50 @@
-import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
+import { Code2, BrainCircuit, Cloud, Layers, Database, ShieldCheck } from "lucide-react";
 
 const skillCategories = [
-  { title: "Languages", skills: ["Python", "Java", "SQL", "C", "HTML/CSS"], color: "from-primary to-primary/60" },
-  { title: "AI / ML & GenAI", skills: ["Machine Learning", "Deep Learning", "NLP", "RAG", "LLM (Ollama/Qwen2.5)", "Generative AI", "PyTorch", "OpenCV"], color: "from-accent to-accent/60" },
-  { title: "Cloud & Serverless", skills: ["AWS Lambda", "AWS DynamoDB", "AWS S3", "AWS CDK", "Amazon Rekognition", "SageMaker A2I", "Cognito"], color: "from-primary to-accent" },
-  { title: "Frameworks & Libraries", skills: ["Django REST", "React + Vite", "scikit-learn", "Pandas", "NumPy", "Matplotlib", "shadcn/ui"], color: "from-primary/80 to-accent/80" },
-  { title: "Databases & Vector DBs", skills: ["PostgreSQL", "Qdrant", "Redis", "SQL", "Vector Search"], color: "from-accent/80 to-primary/80" },
-  { title: "DevOps & Certifications", skills: ["AWS ML Foundations", "AWS Agentic AI", "Oracle OCI GenAI Pro", "Docker", "Celery", "GitHub Actions", "Streamlit"], color: "from-primary to-primary/80" },
+  {
+    title: "Languages",
+    icon: Code2,
+    skills: ["Python", "Java", "SQL", "C", "HTML/CSS"],
+    color: "from-primary to-primary/60",
+    glow: "rgba(0, 243, 255, 0.15)",
+  },
+  {
+    title: "AI / ML & GenAI",
+    icon: BrainCircuit,
+    skills: ["Machine Learning", "Deep Learning", "NLP", "RAG", "LLM (Ollama/Qwen2.5)", "Generative AI", "PyTorch", "OpenCV"],
+    color: "from-accent to-accent/60",
+    glow: "rgba(0, 120, 255, 0.18)",
+  },
+  {
+    title: "Cloud & Serverless",
+    icon: Cloud,
+    skills: ["AWS Lambda", "AWS DynamoDB", "AWS S3", "AWS CDK", "Amazon Rekognition", "SageMaker A2I", "Cognito"],
+    color: "from-primary to-accent",
+    glow: "rgba(0, 243, 255, 0.15)",
+  },
+  {
+    title: "Frameworks & Libraries",
+    icon: Layers,
+    skills: ["Django REST", "React + Vite", "scikit-learn", "Pandas", "NumPy", "Matplotlib", "shadcn/ui"],
+    color: "from-primary/80 to-accent/80",
+    glow: "rgba(0, 243, 255, 0.12)",
+  },
+  {
+    title: "Databases & Vector DBs",
+    icon: Database,
+    skills: ["PostgreSQL", "Qdrant", "Redis", "SQL", "Vector Search"],
+    color: "from-accent/80 to-primary/80",
+    glow: "rgba(0, 120, 255, 0.15)",
+  },
+  {
+    title: "DevOps & Certifications",
+    icon: ShieldCheck,
+    skills: ["AWS ML Foundations", "AWS Agentic AI", "Oracle OCI GenAI Pro", "Docker", "Celery", "GitHub Actions", "Streamlit"],
+    color: "from-primary to-primary/80",
+    glow: "rgba(0, 243, 255, 0.15)",
+  },
 ];
 
 const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: number; inView: boolean }) => {
@@ -23,9 +60,9 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
     const mouseY = e.clientY - rect.top;
     setSpotlightPos({ x: mouseX, y: mouseY });
 
-    const xPct = (mouseX / rect.width - 0.5) * 2; // -1 to 1
-    const yPct = (mouseY / rect.height - 0.5) * 2; // -1 to 1
-    setRotate({ x: -yPct * 10, y: xPct * 10 });
+    const xPct = (mouseX / rect.width - 0.5) * 2;
+    const yPct = (mouseY / rect.height - 0.5) * 2;
+    setRotate({ x: -yPct * 8, y: xPct * 8 });
   };
 
   const handleMouseEnter = () => setIsHovered(true);
@@ -33,6 +70,8 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
     setIsHovered(false);
     setRotate({ x: 0, y: 0 });
   };
+
+  const Icon = cat.icon;
 
   return (
     <motion.div
@@ -45,35 +84,42 @@ const SkillCard = ({ cat, i, inView }: { cat: typeof skillCategories[0]; i: numb
       onMouseLeave={handleMouseLeave}
       style={{
         transform: isHovered
-          ? `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-4px)`
+          ? `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-5px)`
           : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)',
         transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
         transformStyle: 'preserve-3d',
       }}
-      className="bg-card border border-border/80 rounded-xl p-6 md:p-8 group hover:border-primary/60 transition-colors duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_30px_rgba(0,243,255,0.2)] cursor-pointer select-none"
+      className="bg-card/90 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_35px_rgba(0,243,255,0.18)] cursor-pointer select-none"
     >
       {/* Top glowing accent line */}
-      <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} />
 
       {/* Dynamic Cursor Spotlight Sheen */}
       <div
-        className="pointer-events-none absolute -inset-px rounded-xl transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(350px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 243, 255, 0.18), transparent 70%)`,
+          background: `radial-gradient(350px circle at ${spotlightPos.x}px ${spotlightPos.y}px, ${cat.glow}, transparent 70%)`,
         }}
       />
 
       <div style={{ transform: "translateZ(25px)" }}>
-        <h3 className="font-display font-bold text-lg md:text-xl mb-4 text-foreground group-hover:text-primary transition-colors flex items-center justify-between">
-          <span>{cat.title}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary group-hover:shadow-[0_0_8px_#00f3ff] transition-all" />
-        </h3>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/40 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300">
+              <Icon size={20} />
+            </div>
+            <h3 className="font-display font-bold text-lg md:text-xl text-foreground group-hover:text-primary transition-colors">
+              {cat.title}
+            </h3>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 pt-1">
           {cat.skills.map((skill) => (
             <span
               key={skill}
-              className="px-2.5 py-1 text-xs bg-secondary/80 text-secondary-foreground uppercase tracking-wider font-semibold border border-border/50 group-hover:border-primary/30 group-hover:text-foreground transition-all duration-300 rounded-md"
+              className="px-2.5 py-1.5 text-xs bg-secondary/60 hover:bg-primary/15 text-muted-foreground hover:text-foreground uppercase tracking-wider font-semibold border border-border/50 hover:border-primary/40 transition-all duration-200 rounded-lg backdrop-blur-sm"
             >
               {skill}
             </span>
