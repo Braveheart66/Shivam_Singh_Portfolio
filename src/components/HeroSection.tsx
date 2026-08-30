@@ -315,6 +315,7 @@ const HeroSection = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [modelScaleProgress, setModelScaleProgress] = useState(0);
+  const [modelOpacity, setModelOpacity] = useState(0);
   const [isModelFixed, setIsModelFixed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeView, setActiveView] = useState('front');
@@ -373,13 +374,25 @@ const HeroSection = () => {
           anticipatePin: 1,
           onUpdate: (self) => {
             const scaleStart = 0.05;
-            const scaleEnd = 0.85;
+            const scaleEnd = 0.75;
+            const exitStart = 0.78;
             const progress = self.progress;
+
+            // Ingress & scaling
             const clampedProgress = gsap.utils.clamp(scaleStart, scaleEnd, progress);
-            const newScale = gsap.utils.mapRange(scaleStart, scaleEnd, 0, 1, clampedProgress);
-            setModelScaleProgress(newScale);
-            setIsModelFixed(progress > scaleEnd);
-            setHeroScrolledPast(progress > 0.95);
+            const inScale = gsap.utils.mapRange(scaleStart, scaleEnd, 0, 1, clampedProgress);
+
+            // Graceful exit boost (progress 0.78 to 1.0)
+            const exitProgress = gsap.utils.clamp(0, 1, (progress - exitStart) / (1.0 - exitStart));
+            const exitScaleFactor = 1 + exitProgress * 1.8; // Accelerates slightly toward camera / space
+            setModelScaleProgress(inScale * exitScaleFactor);
+
+            setIsModelFixed(progress > scaleEnd && progress <= exitStart);
+            setHeroScrolledPast(progress >= 0.99);
+
+            // Graceful opacity fade out at end of hero section
+            const currentOpacity = progress < scaleStart ? 0 : (progress > exitStart ? Math.max(0, 1 - exitProgress) : 1);
+            setModelOpacity(currentOpacity);
 
             if (introRef.current) {
               if (progress > 0) {
@@ -420,12 +433,14 @@ const HeroSection = () => {
           setRoleIndex((i) => (i + 1) % roles.length);
         }
       }
-    }, isDeleting ? 35 : 70);
+    }, isDeleting ? 40 : 80);
     return () => clearTimeout(timeout);
   }, [text, isDeleting, roleIndex, isModelFixed]);
 
   return (
     <section ref={sectionRef} className="relative min-h-screen flex flex-col justify-end px-4 sm:px-6 lg:px-20 xl:px-32 pb-4 overflow-hidden bg-transparent border-b border-border z-20 w-full max-w-full">
+      <TitleSparkles />
+
       <div className="absolute inset-x-0 top-0 h-px bg-border/40" />
       <div className="absolute inset-y-0 left-[10%] w-px bg-border/20 hidden md:block" />
       <div className="absolute inset-y-0 right-[10%] w-px bg-border/20 hidden md:block" />
@@ -444,7 +459,7 @@ const HeroSection = () => {
       </div>
 
       {/* Sci-Fi Camera Viewpoint Switcher HUD */}
-      {modelScaleProgress > 0.45 && !heroScrolledPast && (
+      {modelScaleProgress > 0.45 && !heroScrolledPast && modelOpacity > 0.2 && (
         <div className="absolute top-[12vh] md:top-[16vh] left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-1.5 md:gap-3 bg-black/85 backdrop-blur-xl px-3 py-1.5 md:px-5 md:py-2.5 rounded-full border border-primary/40 shadow-[0_0_30px_rgba(0,243,255,0.3)] pointer-events-auto transition-all duration-300">
           <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-primary/80 mr-1 hidden sm:inline">VIEWPOINT:</span>
           {[
@@ -476,10 +491,10 @@ const HeroSection = () => {
 
       {/* 3D Cosmos and Spaceship Canvas */}
       <div
-        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-500 pointer-events-none"
+        className="middle-3d-model absolute inset-0 z-10 flex items-center justify-center overflow-hidden transition-opacity duration-300 pointer-events-none"
         style={{
-          opacity: heroScrolledPast ? 0 : (modelScaleProgress > 0.02 ? 1 : 0),
-          display: (modelScaleProgress > 0.02 && !heroScrolledPast) ? 'flex' : 'none',
+          opacity: modelOpacity,
+          display: (modelScaleProgress > 0.02 && modelOpacity > 0.01) ? 'flex' : 'none',
         }}
       >
         <Canvas

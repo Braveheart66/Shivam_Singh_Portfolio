@@ -196,30 +196,16 @@ const projects = [
 
 const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: number }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
-
-  // Scroll-driven Parallax Animation for each Project Card
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["start end", "end start"],
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
-
-  const scale = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.93, 1, 1, 0.96]);
-  const opacity = useTransform(smoothProgress, [0, 0.15, 0.85, 1], [0.4, 1, 1, 0.6]);
-  const y = useTransform(smoothProgress, [0, 1], ["40px", "-40px"]);
 
   return (
     <motion.div
       ref={cardRef}
       id={project.id}
-      style={{
-        scale,
-        opacity,
-        y,
-      }}
-      className="relative rounded-3xl bg-card/90 backdrop-blur-xl border border-border/80 p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500 mb-20 last:mb-0 group"
+      initial={{ opacity: 0, y: 50, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+      className="relative rounded-3xl bg-card/90 backdrop-blur-xl border border-border/80 p-6 sm:p-8 lg:p-12 overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500 mb-20 last:mb-0 group will-change-transform"
     >
       {/* Top Accent Gradient Header */}
       <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${project.gradient}`} />
@@ -334,38 +320,31 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
             System Architecture & Pipeline Workflow
           </h4>
           <span className="text-xs text-muted-foreground font-mono">
-            4-Stage Execution Flow (Click to Inspect)
+            4-Stage Execution Flow (Hover to Inspect)
           </span>
         </div>
 
-        {/* 4-Stage Connected Workflow Visualizer with Interactive Stagger */}
+        {/* 4-Stage Connected Workflow Visualizer with Hover Highlights */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
           {project.workflow.map((node, stepIdx) => {
             const Icon = node.icon;
-            const isSelected = activeWorkflowStep === stepIdx;
 
             return (
               <motion.div
                 key={node.step}
-                whileHover={{ y: -4, scale: 1.02 }}
-                onClick={() => setActiveWorkflowStep(stepIdx)}
-                className={`group p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative ${
-                  isSelected
-                    ? "bg-primary/10 border-primary shadow-[0_0_25px_rgba(0,243,255,0.2)]"
-                    : "bg-secondary/30 border-border/60 hover:border-primary/40 hover:bg-secondary/50"
-                }`}
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+                className="group p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_30px_rgba(0,243,255,0.18)]"
               >
                 {/* Step Number Badge */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <span className={`font-mono font-bold text-xs px-2.5 py-0.5 rounded border transition-colors ${
-                        isSelected ? "bg-primary text-black border-primary font-black" : "bg-black/50 border-border text-primary"
-                      }`}>
+                      <span className="font-mono font-bold text-xs px-2.5 py-0.5 rounded border bg-black/50 border-border text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
                         STEP {node.step}
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
                       <Icon size={16} />
                     </div>
                   </div>
@@ -381,7 +360,7 @@ const ProjectShowcaseCard = ({ project, i }: { project: typeof projects[0]; i: n
                 {/* Progress indicator bar */}
                 <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px] font-mono text-muted-foreground/80">
                   <span>Stage {stepIdx + 1} of 4</span>
-                  <CheckCircle2 size={13} className={isSelected ? "text-primary" : "text-primary/70"} />
+                  <CheckCircle2 size={13} className="text-primary/70 group-hover:text-primary transition-colors" />
                 </div>
               </motion.div>
             );
