@@ -292,9 +292,9 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                   <InteractiveTiltCard
                     key={m.label}
                     maxTilt={12}
-                    depth={20}
-                    glowColor="rgba(0, 243, 255, 0.3)"
-                    className="p-3.5 sm:p-4 rounded-xl bg-[#0d1117]/85 backdrop-blur-xl border border-white/15 dark:border-white/10 hover:border-primary/50 transition-all duration-300 flex flex-col justify-between shadow-md"
+                    depth={15}
+                    glowColor="rgba(0, 243, 255, 0.2)"
+                    className="p-3.5 sm:p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between shadow-sm"
                   >
                     <span className="text-[10px] sm:text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
                       {m.label}
@@ -329,20 +329,20 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                   <InteractiveTiltCard
                     key={node.step}
                     maxTilt={14}
-                    depth={30}
-                    glowColor="rgba(0, 243, 255, 0.3)"
-                    className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-[#0a0d14]/90 dark:bg-[#070a10]/95 backdrop-blur-2xl border-white/15 dark:border-white/10 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(0,243,255,0.22)]"
+                    depth={20}
+                    glowColor="rgba(0, 243, 255, 0.2)"
+                    className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_25px_rgba(0,243,255,0.18)]"
                   >
                     {/* Step Number Badge */}
-                    <div style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}>
+                    <div style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-xs px-2.5 py-0.5 rounded border bg-black/60 border-white/15 text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
+                          <span className="font-mono font-bold text-xs px-2.5 py-0.5 rounded border bg-black/60 border-border text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
                             STEP {node.step}
                           </span>
                         </div>
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.4)] transition-all duration-300">
-                          <Icon size={16} />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
+                          <Icon size={15} />
                         </div>
                       </div>
 
