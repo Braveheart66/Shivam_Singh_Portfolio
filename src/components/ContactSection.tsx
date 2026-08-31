@@ -87,14 +87,11 @@ const ContactSection = () => {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <InteractiveTiltCard
-              maxTilt={8}
-              depth={25}
-              glowColor="rgba(0, 243, 255, 0.25)"
-              className="rounded-3xl p-8 md:p-12 bg-[#0a0d14]/90 dark:bg-[#070a10]/95 backdrop-blur-2xl border border-white/15 dark:border-white/10 hover:border-primary/50 shadow-2xl transition-all duration-300 relative overflow-hidden"
+              maxTilt={7}
+              depth={20}
+              glowColor="rgba(0, 243, 255, 0.15)"
+              className="rounded-2xl p-8 md:p-10 bg-card border border-border hover:border-primary/50 shadow-xl transition-all duration-300 relative overflow-hidden"
             >
-              {/* Top glowing accent line */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-primary to-blue-500 opacity-50" />
-
               <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 <div className="grid md:grid-cols-2 gap-6" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
                   <motion.div
@@ -102,14 +99,14 @@ const ContactSection = () => {
                     animate={inView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <label className="text-xs font-mono uppercase tracking-widest text-primary mb-2 block font-semibold">Your Name</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Name</label>
                     <input
                       required
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-[#111622]/80 border border-white/10 rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all cursor-text"
-                      placeholder="Alex Mercer"
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all cursor-text"
+                      placeholder="Your name"
                     />
                   </motion.div>
                   <motion.div
@@ -117,14 +114,14 @@ const ContactSection = () => {
                     animate={inView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    <label className="text-xs font-mono uppercase tracking-widest text-primary mb-2 block font-semibold">Email Address</label>
+                    <label className="text-sm text-muted-foreground mb-2 block">Email</label>
                     <input
                       required
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#111622]/80 border border-white/10 rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all cursor-text"
-                      placeholder="alex@company.com"
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all cursor-text"
+                      placeholder="your@email.com"
                     />
                   </motion.div>
                 </div>
@@ -134,17 +131,17 @@ const ContactSection = () => {
                   transition={{ duration: 0.5, delay: 0.5 }}
                   style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
                 >
-                  <label className="text-xs font-mono uppercase tracking-widest text-primary mb-2 block font-semibold">Your Message</label>
+                  <label className="text-sm text-muted-foreground mb-2 block">Message</label>
                   <textarea
                     required
                     rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full bg-[#111622]/80 border border-white/10 rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all resize-none cursor-text"
-                    placeholder="Tell me about your vision, architectural challenges, or project goals..."
+                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all resize-none cursor-text"
+                    placeholder="Tell me about your project..."
                   />
                 </motion.div>
-                <div className="pt-3" style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
+                <div className="pt-2" style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}>
                   <LiquidButton
                     type="submit"
                     disabled={sending}

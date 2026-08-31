@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Trophy, Award, Cloud, ShieldCheck } from "lucide-react";
 import { MagicText } from "@/components/ui/magic-text";
+import { InteractiveTiltCard } from "@/components/ui/interactive-tilt-card";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -45,22 +46,30 @@ const ExperienceCard = ({ item, i }: { item: typeof achievements[0]; i: number }
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: 0.08 * i, ease: "easeOut" }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className={`bg-card p-8 md:p-10 group border border-border hover:border-primary/50 transition-all duration-300 flex flex-col justify-between ${item.colSpan}`}
+      className={`h-full ${item.colSpan}`}
     >
-      <div>
-        <div className="flex items-center gap-4 mb-5">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors duration-300">
-            <item.icon className="text-primary" size={24} />
+      <InteractiveTiltCard
+        maxTilt={12}
+        depth={25}
+        glowColor="rgba(0, 243, 255, 0.15)"
+        className="bg-card p-8 md:p-10 group border border-border hover:border-primary/50 transition-all duration-300 flex flex-col justify-between rounded-2xl h-full shadow-lg cursor-pointer select-none"
+      >
+        <div className="relative z-10 flex flex-col justify-between h-full">
+          <div className="flex items-center gap-4 mb-5" style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}>
+            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:border-primary/40 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300">
+              <item.icon className="text-primary" size={24} />
+            </div>
+            <h3 className="font-display font-bold text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
           </div>
-          <h3 className="font-display font-bold text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
+          <div style={{ transform: "translateZ(15px)", transformStyle: "preserve-3d" }}>
+            <MagicText
+              text={item.desc}
+              offset={["start 0.98", "start 0.45"]}
+              className="text-muted-foreground text-sm md:text-base leading-relaxed"
+            />
+          </div>
         </div>
-        <MagicText
-          text={item.desc}
-          offset={["start 0.98", "start 0.45"]}
-          className="text-muted-foreground text-sm md:text-base leading-relaxed"
-        />
-      </div>
+      </InteractiveTiltCard>
     </motion.div>
   );
 };
@@ -116,7 +125,7 @@ const ExperienceSection = () => {
 
         {/* Right Column - Scrolling Content */}
         <div ref={rightColRef} className="md:col-span-7 lg:col-span-8 flex flex-col p-8 md:p-12 justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8" style={{ perspective: "1200px" }}>
             {achievements.map((item, i) => (
               <ExperienceCard key={item.title} item={item} i={i} />
             ))}
