@@ -1,17 +1,16 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
-const ParticleSystem = () => {
+const ParticleSystem = ({ count = 1400 }: { count?: number }) => {
   const ref = useRef<THREE.Points>(null);
 
-  // Generate 1400 particles in a cosmic sphere
+  // Generate particles in a cosmic sphere
   const sphere = useMemo(() => {
-    const particleCount = 1400;
-    const array = new Float32Array(particleCount * 3);
+    const array = new Float32Array(count * 3);
 
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < count; i++) {
       const radius = 12 * Math.cbrt(Math.random());
       const theta = 2 * Math.PI * Math.random();
       const phi = Math.acos(2 * Math.random() - 1);
@@ -25,12 +24,12 @@ const ParticleSystem = () => {
       array[i * 3 + 2] = z;
     }
     return array;
-  }, []);
+  }, [count]);
 
   useFrame((_, delta) => {
     if (ref.current) {
-      ref.current.rotation.x -= delta * 0.03;
-      ref.current.rotation.y -= delta * 0.04;
+      ref.current.rotation.x -= delta * 0.02;
+      ref.current.rotation.y -= delta * 0.03;
     }
   });
 
@@ -43,7 +42,7 @@ const ParticleSystem = () => {
           size={0.035}
           sizeAttenuation={true}
           depthWrite={false}
-          opacity={0.65}
+          opacity={0.6}
         />
       </Points>
     </group>
@@ -51,10 +50,29 @@ const ParticleSystem = () => {
 };
 
 const ParticleBackground = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" style={{ background: "radial-gradient(ellipse at center, rgba(10,15,30,0.4) 0%, rgba(2,4,10,0.95) 100%)" }}>
-      <Canvas dpr={[1, 1]} gl={{ antialias: false, powerPreference: "high-performance" }} camera={{ position: [0, 0, 5] }}>
-        <ParticleSystem />
+    <div
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(ellipse at center, rgba(10,15,30,0.4) 0%, rgba(2,4,10,0.95) 100%)",
+      }}
+    >
+      <Canvas
+        dpr={[1, 1]}
+        gl={{ antialias: false, powerPreference: "high-performance", precision: "lowp" }}
+        camera={{ position: [0, 0, 5] }}
+      >
+        <ParticleSystem count={isMobile ? 350 : 1400} />
       </Canvas>
     </div>
   );

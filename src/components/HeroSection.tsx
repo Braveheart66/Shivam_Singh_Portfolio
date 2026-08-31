@@ -475,6 +475,7 @@ const HeroSection = () => {
         }}
       >
         <Canvas
+          frameloop={heroScrolledPast ? "never" : "always"}
           dpr={[1, 1.25]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance", precision: "mediump" }}
           camera={{ fov: isMobile ? 48 : 45, position: [0, 0, isMobile ? 16 : 15] }}

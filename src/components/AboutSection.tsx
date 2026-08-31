@@ -62,12 +62,14 @@ const AboutSection = () => {
           ref={leftColRef}
           className="md:col-span-1 p-8 md:p-16 border-b md:border-b-0 md:border-r border-border h-fit md:h-screen flex flex-col justify-center relative overflow-hidden"
         >
-          {/* Subtle 3D background integrated into the pinned section */}
-          <div className="absolute inset-0 opacity-30 pointer-events-none z-0">
+          {/* Subtle 3D background integrated into the pinned section (Desktop only to conserve mobile GPU) */}
+          <div className="hidden md:block absolute inset-0 opacity-30 pointer-events-none z-0">
             <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
               <InteractiveModel color="hsl(151, 55%, 52%)" distort={0.4} speed={1} />
             </Canvas>
           </div>
+          {/* Lightweight CSS glow for mobile */}
+          <div className="md:hidden absolute inset-0 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative z-10" ref={inViewRef}>
             <motion.div
