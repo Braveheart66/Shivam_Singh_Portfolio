@@ -40,9 +40,9 @@ const CursorGlow = () => {
       ref={glowRef}
       className="fixed top-0 left-0 pointer-events-none z-40 hidden md:block will-change-transform"
       style={{
-        width: 400,
-        height: 400,
-        background: "radial-gradient(circle, hsla(151, 55%, 52%, 0.08) 0%, hsla(217, 91%, 60%, 0.03) 40%, transparent 70%)",
+        width: 320,
+        height: 320,
+        background: "radial-gradient(circle, rgba(0, 243, 255, 0.035) 0%, rgba(0, 120, 255, 0.015) 40%, transparent 70%)",
         transform: "translate3d(-500px, -500px, 0)",
       }}
     />

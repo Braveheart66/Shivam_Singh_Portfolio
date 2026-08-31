@@ -58,11 +58,6 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="border-b border-border bg-background/75 backdrop-blur-[1px] relative z-20 overflow-hidden" ref={sectionRef}>
-      <motion.div
-        style={{ y: useTransform(scrollYProgress, [0, 1], ["60px", "-60px"]) }}
-        className="absolute right-1/4 bottom-0 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[150px] pointer-events-none"
-      />
-
       <div className="max-w-[90rem] mx-auto border-x border-border p-8 md:p-16 lg:p-20 relative" ref={ref}>
         <motion.div
           style={{ y: parallaxY }}
