@@ -4,6 +4,7 @@ import { Github, ExternalLink, Activity, Cpu, ShieldCheck, Database, Cloud, Zap,
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { LiquidButton } from "@/components/ui/button";
 import { MagicText } from "@/components/ui/magic-text";
+import { InteractiveTiltCard } from "@/components/ui/interactive-tilt-card";
 
 const projects = [
   {
@@ -288,17 +289,19 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
               </h4>
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 {project.metrics.map((m) => (
-                  <div
+                  <InteractiveTiltCard
                     key={m.label}
-                    className="p-3 sm:p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
+                    maxTilt={8}
+                    depth={15}
+                    className="p-3 sm:p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
                   >
-                    <span className="text-[10px] sm:text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
+                    <span className="text-[10px] sm:text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
                       {m.label}
                     </span>
-                    <span className="text-xs sm:text-sm font-semibold text-foreground font-display">
+                    <span className="text-xs sm:text-sm font-semibold text-foreground font-display block">
                       {m.value}
                     </span>
-                  </div>
+                  </InteractiveTiltCard>
                 ))}
               </div>
             </div>
@@ -322,10 +325,10 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                 const Icon = node.icon;
 
                 return (
-                  <motion.div
+                  <InteractiveTiltCard
                     key={node.step}
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    transition={{ duration: 0.2 }}
+                    maxTilt={10}
+                    depth={20}
                     className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_25px_rgba(0,243,255,0.18)]"
                   >
                     {/* Step Number Badge */}
@@ -356,7 +359,7 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                       <span>Stage {stepIdx + 1} of 4</span>
                       <CheckCircle2 size={12} className="text-primary/70 group-hover:text-primary transition-colors" />
                     </div>
-                  </motion.div>
+                  </InteractiveTiltCard>
                 );
               })}
             </div>

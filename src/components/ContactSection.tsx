@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { LiquidButton } from "@/components/ui/button";
+import { InteractiveTiltCard } from "@/components/ui/interactive-tilt-card";
 
 const ContactSection = () => {
   const ref = useRef(null);
@@ -80,80 +81,85 @@ const ContactSection = () => {
         </motion.div>
 
         <div className="max-w-3xl mx-auto">
-
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="glass rounded-2xl p-8 md:p-10 space-y-6"
-        >
-          <div className="grid md:grid-cols-2 gap-6 relative z-20">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <label className="text-sm text-muted-foreground mb-2 block">Name</label>
-              <input
-                required
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all pointer-events-auto cursor-text relative z-20"
-                placeholder="Your name"
-              />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <label className="text-sm text-muted-foreground mb-2 block">Email</label>
-              <input
-                required
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all pointer-events-auto cursor-text relative z-20"
-                placeholder="your@email.com"
-              />
-            </motion.div>
-          </div>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="relative z-20"
+            initial={{ opacity: 0, y: 40, scale: 0.97 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <label className="text-sm text-muted-foreground mb-2 block">Message</label>
-            <textarea
-              required
-              rows={5}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all resize-none pointer-events-auto cursor-text relative z-20"
-              placeholder="Tell me about your project..."
-            />
-          </motion.div>
-          <div className="pt-2">
-            <LiquidButton
-              type="submit"
-              disabled={sending}
-              size="lg"
-              className="w-full md:w-auto px-8 py-3.5 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2 text-white hover:text-primary"
+            <InteractiveTiltCard
+              maxTilt={6}
+              depth={15}
+              className="glass rounded-2xl p-8 md:p-10 border border-border/80 hover:border-primary/50 shadow-2xl transition-all duration-300 relative overflow-hidden"
             >
-              {sending ? (
-                <span className="animate-pulse">Transmitting Data...</span>
-              ) : (
-                <>
-                  <Send size={15} />
-                  <span>Send Message</span>
-                </>
-              )}
-            </LiquidButton>
-          </div>
-        </motion.form>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6 relative z-20">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <label className="text-sm text-muted-foreground mb-2 block">Name</label>
+                    <input
+                      required
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all pointer-events-auto cursor-text relative z-20"
+                      placeholder="Your name"
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                  >
+                    <label className="text-sm text-muted-foreground mb-2 block">Email</label>
+                    <input
+                      required
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all pointer-events-auto cursor-text relative z-20"
+                      placeholder="your@email.com"
+                    />
+                  </motion.div>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="relative z-20"
+                >
+                  <label className="text-sm text-muted-foreground mb-2 block">Message</label>
+                  <textarea
+                    required
+                    rows={5}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all resize-none pointer-events-auto cursor-text relative z-20"
+                    placeholder="Tell me about your project..."
+                  />
+                </motion.div>
+                <div className="pt-2">
+                  <LiquidButton
+                    type="submit"
+                    disabled={sending}
+                    size="lg"
+                    className="w-full md:w-auto px-8 py-3.5 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-2 text-white hover:text-primary"
+                  >
+                    {sending ? (
+                      <span className="animate-pulse">Transmitting Data...</span>
+                    ) : (
+                      <>
+                        <Send size={15} />
+                        <span>Send Message</span>
+                      </>
+                    )}
+                  </LiquidButton>
+                </div>
+              </form>
+            </InteractiveTiltCard>
+          </motion.div>
         </div>
       </div>
     </section>

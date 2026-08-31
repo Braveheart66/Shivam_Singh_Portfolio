@@ -1,6 +1,6 @@
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Code2, BrainCircuit, Cloud, Layers, Database, ShieldCheck } from "lucide-react";
+import { InteractiveTiltCard } from "@/components/ui/interactive-tilt-card";
 
 const skillCategories = [
   {
@@ -48,85 +48,48 @@ const skillCategories = [
 ];
 
 const SkillCard = ({ cat, i }: { cat: typeof skillCategories[0]; i: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [rotate, setRotate] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    setSpotlightPos({ x: mouseX, y: mouseY });
-
-    const xPct = (mouseX / rect.width - 0.5) * 2;
-    const yPct = (mouseY / rect.height - 0.5) * 2;
-    setRotate({ x: -yPct * 8, y: xPct * 8 });
-  };
-
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setRotate({ x: 0, y: 0 });
-  };
-
   const Icon = cat.icon;
 
   return (
     <motion.div
-      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, delay: 0.08 * i, ease: [0.16, 1, 0.3, 1] }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transform: isHovered
-          ? `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-5px)`
-          : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)',
-        transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
-        transformStyle: 'preserve-3d',
-      }}
-      className="bg-card/90 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_35px_rgba(0,243,255,0.18)] cursor-pointer select-none will-change-transform"
+      className="h-full"
     >
-      {/* Top glowing accent line */}
-      <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} />
+      <InteractiveTiltCard
+        maxTilt={9.5}
+        depth={25}
+        className="h-full bg-card/90 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 group hover:border-primary/60 transition-all duration-300 relative overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-[0_0_35px_rgba(0,243,255,0.18)] cursor-pointer select-none"
+      >
+        {/* Top glowing accent line */}
+        <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cat.color} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} />
 
-      {/* Dynamic Cursor Spotlight Sheen */}
-      <div
-        className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300"
-        style={{
-          opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(350px circle at ${spotlightPos.x}px ${spotlightPos.y}px, ${cat.glow}, transparent 70%)`,
-        }}
-      />
-
-      <div style={{ transform: "translateZ(25px)" }}>
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/40 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300">
-              <Icon size={20} />
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/40 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300">
+                <Icon size={20} />
+              </div>
+              <h3 className="font-display font-bold text-lg md:text-xl text-foreground group-hover:text-primary transition-colors">
+                {cat.title}
+              </h3>
             </div>
-            <h3 className="font-display font-bold text-lg md:text-xl text-foreground group-hover:text-primary transition-colors">
-              {cat.title}
-            </h3>
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-1">
+            {cat.skills.map((skill) => (
+              <span
+                key={skill}
+                className="px-2.5 py-1.5 text-xs bg-secondary/60 hover:bg-primary/15 text-muted-foreground hover:text-foreground uppercase tracking-wider font-semibold border border-border/50 hover:border-primary/40 transition-all duration-200 rounded-lg backdrop-blur-sm"
+              >
+                {skill}
+              </span>
+            ))}
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-2 pt-1">
-          {cat.skills.map((skill) => (
-            <span
-              key={skill}
-              className="px-2.5 py-1.5 text-xs bg-secondary/60 hover:bg-primary/15 text-muted-foreground hover:text-foreground uppercase tracking-wider font-semibold border border-border/50 hover:border-primary/40 transition-all duration-200 rounded-lg backdrop-blur-sm"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </div>
+      </InteractiveTiltCard>
     </motion.div>
   );
 };
