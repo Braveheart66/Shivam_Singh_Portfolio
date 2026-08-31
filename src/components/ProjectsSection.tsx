@@ -287,18 +287,19 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 Key Engineering Highlights
               </h4>
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3" style={{ perspective: "1000px" }}>
                 {project.metrics.map((m) => (
                   <InteractiveTiltCard
                     key={m.label}
-                    maxTilt={8}
-                    depth={15}
-                    className="p-3 sm:p-4 rounded-xl bg-secondary/40 border border-border/50 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+                    maxTilt={12}
+                    depth={20}
+                    glowColor="rgba(0, 243, 255, 0.3)"
+                    className="p-3.5 sm:p-4 rounded-xl bg-[#0d1117]/85 backdrop-blur-xl border border-white/15 dark:border-white/10 hover:border-primary/50 transition-all duration-300 flex flex-col justify-between shadow-md"
                   >
                     <span className="text-[10px] sm:text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1 block">
                       {m.label}
                     </span>
-                    <span className="text-xs sm:text-sm font-semibold text-foreground font-display block">
+                    <span className="text-xs sm:text-sm font-semibold text-foreground font-display block group-hover:text-primary transition-colors">
                       {m.value}
                     </span>
                   </InteractiveTiltCard>
@@ -320,27 +321,28 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
             </div>
 
             {/* 4-Stage Connected Workflow Visualizer with Hover Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" style={{ perspective: "1200px" }}>
               {project.workflow.map((node, stepIdx) => {
                 const Icon = node.icon;
 
                 return (
                   <InteractiveTiltCard
                     key={node.step}
-                    maxTilt={10}
-                    depth={20}
-                    className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-secondary/30 border-border/60 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_25px_rgba(0,243,255,0.18)]"
+                    maxTilt={14}
+                    depth={30}
+                    glowColor="rgba(0, 243, 255, 0.3)"
+                    className="group p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative bg-[#0a0d14]/90 dark:bg-[#070a10]/95 backdrop-blur-2xl border-white/15 dark:border-white/10 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(0,243,255,0.22)]"
                   >
                     {/* Step Number Badge */}
-                    <div>
+                    <div style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-xs px-2 py-0.5 rounded border bg-black/50 border-border text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
+                          <span className="font-mono font-bold text-xs px-2.5 py-0.5 rounded border bg-black/60 border-white/15 text-primary group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300">
                             STEP {node.step}
                           </span>
                         </div>
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
-                          <Icon size={15} />
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 group-hover:shadow-[0_0_15px_rgba(0,243,255,0.4)] transition-all duration-300">
+                          <Icon size={16} />
                         </div>
                       </div>
 
@@ -355,7 +357,7 @@ const ProjectScrollShowcase = ({ project }: { project: typeof projects[0] }) => 
                     </div>
 
                     {/* Progress indicator bar */}
-                    <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-muted-foreground/80">
+                    <div style={{ transform: "translateZ(15px)" }} className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-muted-foreground/80">
                       <span>Stage {stepIdx + 1} of 4</span>
                       <CheckCircle2 size={12} className="text-primary/70 group-hover:text-primary transition-colors" />
                     </div>
